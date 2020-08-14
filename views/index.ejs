@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">  
-  <head>    
+  <head>
+    <!--Die Gestaltung der Elemente der 
+      HTML-Seite wird in der styles.css festgelegt-->
     <link rel="stylesheet" href="styles.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
@@ -11,7 +13,7 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
     <title>N27 - Startseite</title>
   </head>
   <body>
@@ -20,15 +22,16 @@
       <nav>      
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
         <a href="/login">Logout</a>        
-        <a href="/impressum">Impressum</a>   
+        <a href="/impressum">Impressum</a>
+        <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
         <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
-        <a href="/profilBearbeiten"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
-      </nav>
-    </header>   
+      </nav>   
+      <br>
+    </header>    
     <form>          
       <button formaction="/kontoAnlegen">Konto anlegen</button>
-      <button formaction="/ueberweisen">Überweisen</button>
-      <button formaction="/kontoAbfragen">Konto abfragen</button>
-    </form>     
+      <button formaction="/ueberweisen">Überweisung tätigen</button>
+      <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
+    </form>  
   </body>
 </html>
