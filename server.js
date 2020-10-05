@@ -36,6 +36,7 @@ class Kunde {
 
 let kunde = new Kunde()
 
+
 // Initialisierung
 kunde.IdKunde = 150000
 kunde.Kennwort = "123"
