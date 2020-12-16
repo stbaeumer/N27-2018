@@ -9,69 +9,70 @@ const server = app.listen(process.env.PORT || 3000, () => {
     console.log('Server lauscht auf Port %s', server.address().port)    
 })
 
-// Eine Klasse ist Bauplan. 
-// Ein Objekt ist die konkrete Umsetzung auf der Grundlage des Bauplans.
-// Alle Objekte eines Bauplans haben dieselben Eigenschaften, aber
-// möglicherweise unterschiedliche Eigenschaftswerte.
+// Eine Klasse ist ein Bauplan. Der Bauplan sieht vor, wie Objekte erstellt werden.
+// Alle Objekte, die von einem Bauplan erstellt werden, haben die selben Eigenschaften,
+// aber möglicherweise unterschiedliche Eigenschaftswerte.
 
-// Klassendefinition 
-// =================
+// Klassendefintion
+// ================
 
 class Rechteck{
-   constructor(){
-       this.laenge
-       this.breite
-   } 
+    constructor(){
+        this.laenge
+        this.breite
+    }
 }
+
+// Klassendefinition für Schüler in einer Schule:
 
 class Schueler{
     constructor(){
         this.geschlecht
-        this.vorname
+        this.klasse
         this.alter
+        this.vorname
+        this.nachname
     }
 }
 
 class Fussballer{
     constructor(){
-        this.name
-        this.nationalitaet
-        this.nummer 
+        this.vorname 
+        this.nachname
+        this.mannschaft
+        this.geschlecht
     }
 }
 
-// Deklaration eines Rechteck-Objekts vom Typ Rechteck
-// Deklaration = Bekanntmachung, dass es ein Objekt vom Typ Rechteck geben soll.
-
+// Deklaration eines neuen Objekts vom Typ Rechteck
+// Deklaration = Bekanntmachung
 // let rechteck = ...
 
-// Instanziierung erkennt man am reservierten Wort "new".
-// Instanziierung reserviert Speicherzellen für das soeben deklarierte Objekt.
-
+// Instanziierung eines neuen Objekts.
+// Instanziierung erkennt man immer am reservierten Wort "new".
+// Bei der Instanziierung wird Arbeitsspeicher bereitgestellt.
 // ... = new Rechteck()
 
-// Initialisierung belegt die reservierten Speicherzellen mit konkreten
-// Eigenschaftswerten.
-
-// rechteck.breite = 3
-
+// 1.Deklaration  2.Instanziierung
 let rechteck = new Rechteck()
-rechteck.breite = 3
-rechteck.laenge = 2
-
-console.log("Breite : " + rechteck.breite)
-console.log("Länge :  " + rechteck.laenge)
-console.log(rechteck)
-
 let schueler = new Schueler()
-schueler.geschlecht = "w"
-schueler.vorname = "Petra"
-schueler.alter = 16
-
 let fussballer = new Fussballer()
-fussballer.name = "Fred"
-fussballer.nationalitaet = "D"
-fussballer.nummer = 10
+
+
+// 3. Initialisierung (Konkrete Eingeschaftswerte werden zugewiesen)
+
+rechteck.breite = 2
+rechteck.laenge = 3
+
+schueler.geschlecht = "w"
+schueler.alter = 17
+
+fussballer.mannschaft = "FC Borken"
+fussballer.vorname = "Firke"
+
+console.log("Länge: " + rechteck.laenge)
+console.log("Breite: " + rechteck.breite)
+
 
 // Wenn localhost:3000/klasse-objekt-ejs-trainieren aufgerufen wird ...
 
@@ -79,14 +80,12 @@ app.get('/klasse-objekt-ejs-trainieren',(req, res, next) => {
 
     // ... wird klasse-objekt-ejs-trainieren.ejs gerendert:
 
-    res.render('klasse-objekt-ejs-trainieren', {
-       breite : rechteck.breite,
-       laenge : rechteck.laenge,
-       geschlecht : schueler.geschlecht,
-       vorname : schueler.vorname,
-       alter : schueler.alter,
-       name : fussballer.name,
-       nationalitaet : fussballer.nationalitaet,
-       nummer : fussballer.nummer
+    res.render('klasse-objekt-ejs-trainieren', {                                      
+        breite : rechteck.breite,
+        laenge : rechteck.laenge,
+        geschlecht : schueler.geschlecht,
+        alter : schueler.alter,
+        vorname : fussballer.vorname,
+        mannschaft : fussballer.mannschaft
     })
 })

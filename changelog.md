@@ -1,17 +1,16 @@
-# Changelog 
+# Changelog
 
-## 20.02.2019
+## 20190506
 
-* ```body-parser``` installiert. 
-* ```express``` installiert und eingebunden
-* ```app```-Objekt 
-* ```ejs``` installiert
-* ```body-parser``` in ```app``` eingebunden
-* Pfad zum statischen ```public```-Ordner angelegt
-* ```server``` startklar gemacht  
-* ```nodemon``` installiert
+<input type="text" name="kontonummer" pattern="[0-9]{10}" title="Bitte exakt 10 Ziffern eingeben!">
+<input type="number" name="kontonummer" max="10" min="10" required>
 
-## 13.02.2019
+## 20190225
 
-* ```index.html``` erstellt
-* ```login.html``` erstellt
+* heroku konfiguriert
+
+## 20190218
+
+* Favicon eingebaut
+* login ausprogrammiert
+* npm-Module installiert
