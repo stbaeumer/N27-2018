@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
 const mysql = require('mysql')
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config')[env];
+
 // Klassendefinition der Klasse Konto. 
 // Die Klasse ist der Bauplan, der alle rele- 
 // vanten Eigenschaften enthält.
@@ -40,11 +37,8 @@ class Kunde {
 
 let kunde = new Kunde()
 
-
-<<<<<<< HEAD
-=======
 // Initialisierung
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
+
 kunde.IdKunde = 150000
 kunde.Kennwort = "123"
 kunde.Geburtsdatum = "1999-12-31"
@@ -70,7 +64,6 @@ dbVerbindung.connect(function(fehler){
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
-<<<<<<< HEAD
             }else{
                 console.log("Fehler: " + fehler )
             }
@@ -85,22 +78,15 @@ dbVerbindung.connect(function(fehler){
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
-=======
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
             }else{
                 console.log("Fehler: " + fehler )
             }
         }else{
-<<<<<<< HEAD
             console.log("Tabelle konto erfolgreich angelegt.")
-=======
-            console.log("Tabelle Kunde erfolgreich angelegt.")
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
         }
     })
 })
 
-<<<<<<< HEAD
 // Eigenschaften einer Kontobewegung: iban  VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP 
 // Ein neue Tabelle ist zu erstellen namens kontobewegung.
 // Primary Key: iban, timestamp
@@ -108,10 +94,6 @@ dbVerbindung.connect(function(fehler){
 
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kontobewegung(iban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(iban, timestamp), FOREIGN KEY (iban) REFERENCES konto(iban));', function (fehler) {
-=======
-dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle konto existiert bereits und wird nicht angelegt.")
@@ -124,11 +106,8 @@ dbVerbindung.connect(function(fehler){
     })
 })
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
 // Kunde in die Datenbank schreiben, sofern er noch nicht angelegt ist
 
 dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
@@ -210,7 +189,7 @@ app.post('/',(req, res, next) => {
     // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
     // abgearbeitet.
     if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
-        console.log("Der Cookie wird gesetzt:")
+        console.log("Der Cookie wird gesetzt: " + idKunde)
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
             kunde : idKunde          
@@ -326,7 +305,6 @@ app.post('/stammdatenPflegen',(req, res, next) => {
             kunde.Nachname = req.body.nachname
             erfolgsmeldung += "; Neuer Nachname: " + kunde.Nachname
         }
-<<<<<<< HEAD
         
         if(req.body.kennwort){
             kunde.Kennwort = req.body.kennwort
@@ -342,23 +320,6 @@ app.post('/stammdatenPflegen',(req, res, next) => {
             }            
         }
         
-=======
-        
-        if(req.body.kennwort){
-            kunde.Kennwort = req.body.kennwort
-            erfolgsmeldung += "; Neues Kennwort: " + kunde.Kennwort
-        }
-
-        if(req.body.mail){
-            if(validator.validate(req.body.mail)){
-                kunde.Mail = req.body.mail
-                erfolgsmeldung += "; Neue E-Mail: " + kunde.Mail
-            }else{
-                erfolgsmeldung += "; Die E-Mail " + req.body.mail + " ist syntaktisch falsch und wird nicht aktualisiert."    
-            }            
-        }
-        
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
         res.render('stammdatenPflegen.ejs', {                              
             meldung : erfolgsmeldung
         })
@@ -398,13 +359,15 @@ app.post('/ueberweisen',(req, res, next) => {
         console.log("Kunde ist angemeldet als " + idKunde)
         
         let konto = new Konto()
-<<<<<<< HEAD
         
         var iban = req.body.iban
         var betrag = req.body.betrag
         var verwendungszweck = req.body.verwendungszweck
         
         // Kontobewegung einfügen
+
+
+        // 20210203 https://riptutorial.com/mysql/example/25536/store-a-javascript-timestamp-into-a-timestamp-column
     
         dbVerbindung.query('INSERT INTO kontobewegung(iban,timestamp,betrag,verwendungszweck) VALUES ("' + iban + '",NOW(),' + betrag + ',"' + verwendungszweck + '");', function (fehler) {
             if (fehler){
@@ -423,40 +386,13 @@ app.post('/ueberweisen',(req, res, next) => {
                 }               
             }else{
                 console.log("Abbuchung von Konto " + konto.Iban + " erfolgreich durchgeführt.");
-=======
-
-        // Der Wert aus dem Input mit dem Namen 'kontonummer'
-        // wird zugewiesen (=) an die Eigenschaft Kontonummer
-        // des Objekts namens konto.
-        konto.Kontonummer = req.body.kontonummer
-        konto.Kontoart = req.body.kontoart
-        const bankleitzahl = 27000000
-        const laenderkennung = "DE"
-        konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
-        
-        // Füge das Konto in die MySQL-Datenbank ein
-    
-        dbVerbindung.query('INSERT INTO konto(iban,anfangssaldo,kontoart,timestamp) VALUES ("' + konto.Iban + '",100,"' + konto.Kontoart + '",NOW());', function (fehler) {
-            if (fehler){
-                if(fehler.code == "ER_DUP_ENTRY"){
-                    console.log("Das Konto mit der IBAN " + konto.Iban + " existiert bereits und wird nicht angelegt.")
-                }else{
-                    console.log("Fehler: " + fehler)
-                }                
-            }else{
-                console.log('Das Konto wurde erfolgreich angelegt');
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
             }            
         })
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
         res.render('ueberweisen.ejs', {                              
-<<<<<<< HEAD
             meldung : "Die Überweisung an " + iban + " wurde erfolgreich durchgeführt."
-=======
-            meldung : "Das " + konto.Kontoart + " mit der IBAN " + konto.Iban + " wurde erfolgreich angelegt."
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -467,7 +403,6 @@ app.post('/ueberweisen',(req, res, next) => {
     }
 })
 
-<<<<<<< HEAD
 
 app.get('/zinsen',(req, res, next) => {   
 
@@ -526,12 +461,6 @@ app.get('/kontoAnzeigen',(req, res, next) => {
 
     let idKunde = req.cookies['istAngemeldetAls']
     
-=======
-app.get('/kontoAnzeigen',(req, res, next) => {   
-
-    let idKunde = req.cookies['istAngemeldetAls']
-    
->>>>>>> 0472ae164de750b6683807c377bee747b4fa4b19
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
