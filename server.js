@@ -1,5 +1,5 @@
-console.log(process.env.PORT)
-
+let port = process.env.PORT || 3000
+let mysqlConnect = "nicht verbunden"
 
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
@@ -67,11 +67,13 @@ dbVerbindung.connect(function(fehler){
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
+                mysqlConnect = "erfolgreich verbunden"
             }else{
                 console.log("Fehler: " + fehler )
             }
         }else{
             console.log("Tabelle Kunde erfolgreich angelegt.")
+            mysqlConnect = "erfolgreich verbunden"
         }
     })
 })
@@ -145,7 +147,7 @@ app.get('/',(req, res, next) => {
     
     if(idKunde){
         res.render('index.ejs', {      
-            meldung : process.env.PORT || 3000       
+            protokollzeile: "Port:" + (port || 3000) + " | MySQL-Connect: " + mysqlConnect 
         })
     }else{
         res.render('login.ejs', {                    
@@ -195,7 +197,8 @@ app.post('/',(req, res, next) => {
         console.log("Der Cookie wird gesetzt: " + idKunde)
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
-            kunde : idKunde          
+            kunde : idKunde,
+            protokollzeile: "Port:" + (port || 3000) + " | MySQL-Connect: " + mysqlConnect 
         })
     }else{            
         console.log("Der Cookie wird gelöscht")
