@@ -78,6 +78,8 @@ dbVerbindung.connect(function(fehler){
     })
 })
 
+// 20210203 Anfangssaldo
+
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE konto(iban VARCHAR(22), idKunde INT(11), anfangssaldo DECIMAL(15,2), kontoart VARCHAR(20), timestamp TIMESTAMP, PRIMARY KEY(iban));', function (fehler) {
         if (fehler) {
@@ -91,6 +93,8 @@ dbVerbindung.connect(function(fehler){
         }
     })
 })
+
+// 20210203 Gegenkonto
 
 // Eigenschaften einer Kontobewegung: iban  VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP 
 // Ein neue Tabelle ist zu erstellen namens kontobewegung.
@@ -198,7 +202,7 @@ app.post('/',(req, res, next) => {
         res.cookie('istAngemeldetAls', idKunde)
         res.render('index.ejs', {  
             kunde : idKunde,
-            protokollzeile: "Port:" + (port || 3000) + " | MySQL-Connect: " + mysqlConnect 
+            protokollzeile: "Port:" + (port || 3000) + " | MySQL-Connect: " + mysqlConnect           
         })
     }else{            
         console.log("Der Cookie wird gelöscht")
@@ -345,10 +349,17 @@ app.get('/ueberweisen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        // ... dann wird kontoAnlegen.ejs gerendert.
+        // 20210203
+
+        dbVerbindung.connect(function(fehler){
+            dbVerbindung.query('SELECT iban FROM konto;', function (fehler, result) {
+                if (fehler) throw fehler
         
-        res.render('ueberweisen.ejs', {    
-            meldung : ""                          
+                res.render('ueberweisen.ejs', {    
+                    konten : result,
+                    meldung : ""                          
+                })
+            })
         })
     }else{
         res.render('login.ejs', {                    
@@ -397,7 +408,7 @@ app.post('/ueberweisen',(req, res, next) => {
 
         // ... wird die kontoAnlegen.ejs gerendert.
 
-        res.render('ueberweisen.ejs', {                              
+        res.render('ueberweisen.ejs', {                 
             meldung : "Die Überweisung an " + iban + " wurde erfolgreich durchgeführt."
         })
     }else{
