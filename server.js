@@ -4,7 +4,6 @@
 // Alternativ kann der Ort in einem Cookie gespeichert werden.
 
 let ort = "Borken"
-
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
 //const config = require('./config')[env];
@@ -40,6 +39,7 @@ class Kunde {
     }
 }
 
+let kunde = new Kunde()
 
 // iban ist ein Modul, das wir uns in das Programm installiert haben:
 // npm install iban
@@ -168,7 +168,7 @@ app.get('/',(req, res, next) => {
             res.render('index.ejs', {    
                 ort : ort,
                 meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : process.env.PORT || 3000       
+                meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"    
             }) 
         });        
     }else{
@@ -204,7 +204,7 @@ app.post('/',(req, res, next) => {
             res.render('index.ejs', {    
                 ort : result[0].location.name,
                 meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : process.env.PORT || 3000       
+                meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"      
             }) 
         });        
     }else{            
@@ -237,7 +237,7 @@ app.post('/login',(req, res, next) => {
             // Bei der Instanziierung werden Speicherzellen reserviert.
             // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
 
-            let kunde = new Kunde()
+            kunde = new Kunde()
 
             // Initialisierung
 
