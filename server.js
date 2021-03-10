@@ -264,7 +264,7 @@ app.post('/login',(req, res, next) => {
                     res.render('index.ejs', {    
                         ort : result[0].location.name,
                         meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                        meldung : process.env.PORT || 3000       
+                        meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")" 
                     }) 
                 });
             }else{
@@ -348,15 +348,15 @@ app.post('/kontoAnlegen',(req, res, next) => {
         konto.IdKunde = idKunde
         konto.Kontonummer = req.body.kontonummer
         
-        if(konto.Kontonummer == ""){
+        if(konto.Kontonummer == "" || konto.Kontonummer.length != 4){
             res.render('kontoAnlegen.ejs', {                              
-                meldung : "Zum Kontoanlegen bitte Kontonummer angeben!"
+                meldung : "Zum Kontoanlegen exakt 4 Ziffern angeben!"
             })                             
         }else{
             konto.Kontoart = req.body.kontoart
             const bankleitzahl = 27000000
             const laenderkennung = "DE"
-            konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + konto.Kontonummer)
+            konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + idKunde + konto.Kontonummer)
             
             // Füge das Konto in die MySQL-Datenbank ein
         
