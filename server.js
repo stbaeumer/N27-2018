@@ -526,21 +526,27 @@ app.post('/ueberweisen',(req, res, next) => {
 
         if(quellIban === zielIban){
             res.render('index.ejs', {                              
-                meldung : "Die Quelliban und die Zieliban dürfen nicht übereinstimmen."
+                meldung : "Die Quelliban und die Zieliban dürfen nicht übereinstimmen.",
+                meldungWetter : "",
+                ort : ort
             })    
         }else{
             var betrag = req.body.betrag
 
             if(betrag < 0){
                 res.render('index.ejs', {                              
-                    meldung : "Bitte nur positive Eurobeträge eingeben."
+                    meldung : "Bitte nur positive Eurobeträge eingeben.",
+                    ort : ort,
+                    meldungWetter : ""
                 })    
             }else{
                 var verwendungszweck = req.body.verwendungszweck
             
                 if(verwendungszweck == ""){
                     res.render('index.ejs', {                              
-                        meldung : "Bitte einen Verwendungszweck eingeben."
+                        meldung : "Bitte einen Verwendungszweck eingeben.",
+                        meldungWetter : "",
+                        ort : ort
                     })  
                 }else{
 
@@ -561,7 +567,9 @@ app.post('/ueberweisen',(req, res, next) => {
                     // ... wird die kontoAnlegen.ejs gerendert.
     
                     res.render('index.ejs', {                              
-                        meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt."
+                        meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt.",
+                        meldungWetter : "",
+                        ort : ort
                     })
                 }                
             }
@@ -603,28 +611,28 @@ app.post('/zinsen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        var zinssatz = parseFloat(req.body.zinssatz + 1)
+        var zinssatz = parseFloat(req.body.zinssatz)
         var anfangskapital = req.body.anfangskapital
-        var laufzeit = req.body.laufzeit
+        var gesamtLaufzeit = req.body.laufzeit
         var endkapital = anfangskapital
 
         console.log("zinssatz: " + zinssatz)
         console.log("Anfangskapital: " + anfangskapital)
-        console.log("Laufzeit: " + laufzeit)
-        console.log("Endkapital: " + endkapital)
+        console.log("Laufzeit: " + gesamtLaufzeit)
+        console.log("Endkapital vor der Laufzeit: " + endkapital)
 
         // Wenn rechts oder links vom Plus-Operator ein String steht, wird der Plus-Operator eine Verkettung durchführen.
         // Wenn links und rechts eine Zahl steht, wird eine Addition vorgenommen.
         // Die Zahlen aus dem Request sind Strings. Also müssen sie erst konvertiert werden.
 
-        for(laufzeit; laufzeit > 0; laufzeit--){
-            endkapital = zinssatz + (endkapital * zinssatz / 100)            
-            console.log("Endkapital: " + endkapital)
+        for(restLaufzeit = gesamtLaufzeit; restLaufzeit > 0; restLaufzeit--){
+            endkapital = parseFloat(endkapital) + (parseFloat(endkapital) * (parseFloat(zinssatz) / 100))
+            console.log(endkapital + "= (parseFloat(" + endkapital + ") * (parseFloat(" + zinssatz + ") / 100))")
+            console.log("Endkapital nach " + (gesamtLaufzeit - restLaufzeit) + " Jahren: " + endkapital)
         }
         
-
         res.render('zinsen.ejs', {                              
-            meldung : "Der Endbetrag nach " + req.body.laufzeit + " Jahren ist " + endkapital + "€."
+            meldung : "Aus dem Anfangskapital i.H.v. " + anfangskapital + " Euro wird bei einem Zinssatz von " + zinssatz + " Prozent nach " + gesamtLaufzeit + " Jahren der Endbetrag " + endkapital + " Euro."
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -695,7 +703,9 @@ app.post('/kontoAnzeigen',(req, res, next) => {
                 // ... wird die kontoAnlegen.ejs gerendert.
         
                 res.render('index.ejs', {                              
-                    meldung : "Kontostand des Kontos mit der Iban " + iban + " ist: " + kontostand + " €."
+                    meldung : "Kontostand des Kontos mit der Iban " + iban + " ist: " + kontostand + " €.",
+                    ort : ort,
+                    meldungWetter : ""
                 })
             })
         })
