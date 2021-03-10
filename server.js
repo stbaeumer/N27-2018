@@ -1,4 +1,10 @@
 
+// Auf der obersten Ebene wird der Ort deklariert und initialisiert.
+// Somit steht der Wert während der ganzen Laufzeit des Programms zur Verfügung.
+// Alternativ kann der Ort in einem Cookie gespeichert werden.
+
+let ort = "Borken"
+
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
 //const config = require('./config')[env];
@@ -17,6 +23,9 @@ class Konto{
 }
 
 // Klassendefinition
+// Die Klasse ist der Bauplan, von dem Kunden-Objekte erstellt werden.
+// Alle Objekte vom Typ Kunde haben dieselben Eigenschaften.
+// Die Eigenschaftswerte können unterschiedlich sein.
 
 class Kunde {
     constructor(){
@@ -31,22 +40,6 @@ class Kunde {
     }
 }
 
-// Deklaration (let kunde) und Instanziierung
-// = new Kunde()
-// Bei der Instanzziierung werden Speicher-
-// zellen reserviert.
-
-let kunde = new Kunde()
-
-// Initialisierung
-
-kunde.IdKunde = 150000
-kunde.Kennwort = "123"
-kunde.Geburtsdatum = "1999-12-31"
-kunde.Nachname = "Müller"
-kunde.Vorname = "Hildegard"
-kunde.Geschlecht = "w"
-kunde.Mail = "h.mueller@web.de"
 
 // iban ist ein Modul, das wir uns in das Programm installiert haben:
 // npm install iban
@@ -121,7 +114,7 @@ dbVerbindung.connect(function(fehler){
 })
 
 
-
+/*
 // Kunde in die Datenbank schreiben, sofern er noch nicht angelegt ist
 
 dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
@@ -134,7 +127,7 @@ dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VA
     }else{
         console.log('Kunde mit ID ' + kunde.IdKunde + " erfolgreich in DB angelegt.");
     }
-})
+})*/
 
 // Die Funktionalitäten des weather-Moduls werden der Konstanten weather zugewiesen.
 const weather = require('weather-js');
@@ -160,7 +153,7 @@ app.get('/',(req, res, next) => {
     if(idKunde){
  
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
-        weather.find({search: 'Berlin', degreeType: 'C'}, function(err, result) {
+        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
             if(err) console.log(err);
     
             // stringify ist eine Funktion, die auf das JSON-Objekt aufgerufen den result in einem
@@ -173,13 +166,14 @@ app.get('/',(req, res, next) => {
             console.log("Vom ersten Element die aktuelle Temperatur :" + result[0].current.temperature);
  
             res.render('index.ejs', {    
-                ort : "Borken",
-                meldungWetter : result[0].location.name + " " + result[0].current.temperature + " °" + result[0].location.degreetype,  
+                ort : ort,
+                meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
                 meldung : process.env.PORT || 3000       
             }) 
         });        
     }else{
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {      
+            meldung : ""
         })    
     }
 })
@@ -194,10 +188,14 @@ app.post('/',(req, res, next) => {
         console.log("Der Cookie wird gesetzt: " + idKunde)
         res.cookie('istAngemeldetAls', idKunde)
 
-        let ort = req.body.ort
+        let neuerOrt = req.body.ort
 
-        if(!ort){
-            ort = "Borken"
+        // Wenn der neueOrt aus dem Input nicht leer oder null ist, dann
+        // wird der neueOrt an die Variable ort zugewiesen.
+        // Ansonsten bleibt es bei dem hart eincodierten Wert von ort
+
+        if(neuerOrt){
+            ort = neuerOrt
         }
 
         weather.find({search: ort, degreeType: 'C'}, function(err, result) {
@@ -212,7 +210,8 @@ app.post('/',(req, res, next) => {
     }else{            
         console.log("Der Cookie wird gelöscht")
         res.cookie('istAngemeldetAls','')
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {     
+            meldung : ""               
         })
     }
 })
@@ -224,37 +223,62 @@ app.post('/login',(req, res, next) => {
     const idKunde = req.body.idKunde
     const kennwort = req.body.kennwort
     
-    console.log(idKunde + " == " + kunde.IdKunde + "&&" + kennwort + " == " + kunde.Kennwort)
-
-    // Wenn der Wert von idKunde dem Wert der Eigenschaft kunde.IdKunde
-    // entspricht UND der Wert von kennwort der Eigenschaft kunde.Kennwort
-    // entspricht, dann werden die Anweisungen im Rumpf der if-Kontrollstruktur
-    // abgearbeitet.
-    if(idKunde == kunde.IdKunde && kennwort == kunde.Kennwort){            
-        console.log("Der Cookie wird gesetzt: " + idKunde)
-        res.cookie('istAngemeldetAls', idKunde)
-
-        let ort = req.body.ort
-
-        if(!ort){
-            ort = "Borken"
-        }
-
-        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
-            if(err) console.log(err);
+    dbVerbindung.connect(function(fehler){
+        dbVerbindung.query('SELECT * FROM kunde WHERE idKunde = ' + idKunde + ' AND kennwort = "' + kennwort + '";', function (fehler, result) {
+            if (fehler) throw fehler
+            
+            console.log(result.length)
     
-            res.render('index.ejs', {    
-                ort : result[0].location.name,
-                meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : process.env.PORT || 3000       
-            }) 
-        });        
-    }else{            
-        console.log("Der Cookie wird gelöscht")
-        res.cookie('istAngemeldetAls','')
-        res.render('login.ejs', {                    
+            // Wenn die Anzahl der Einträge im result 1 ist, dann wird die Index geladen
+
+            if(result.length == 1){
+                
+            // Deklaration "let kunde" und Instanziierung "= new Kunde()"
+            // Bei der Instanziierung werden Speicherzellen reserviert.
+            // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
+
+            let kunde = new Kunde()
+
+            // Initialisierung
+
+            kunde.IdKunde = result[0].idKunde
+            kunde.Nachname = result[0].nachname
+            kunde.Vorname = result[0].vorname        
+            kunde.Mail = result[0].mail
+
+            console.log("Der Cookie wird gesetzt: " + idKunde)
+            
+            console.log(kunde)
+            
+            res.cookie('istAngemeldetAls', idKunde)
+
+                let neuerOrt = req.body.ort
+        
+                if(neuerOrt){
+                    ort = neuerOrt
+                }
+        
+                weather.find({search: ort, degreeType: 'C'}, function(err, result) {
+                    if(err) console.log(err);
+            
+                    res.render('index.ejs', {    
+                        ort : result[0].location.name,
+                        meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
+                        meldung : process.env.PORT || 3000       
+                    }) 
+                });
+            }else{
+
+                // Wenn die Anzahl der Einträge != 1 ist, dann bleiben wir auf der Login-Seite
+
+                console.log("Der Cookie wird gelöscht")
+                res.cookie('istAngemeldetAls','')
+                res.render('login.ejs', {                    
+                    meldung : "Falsche Zugangsdaten. Bitte geben Sie die richtigen Zugangsdaten ein!"
+                })
+            }
         })
-    }
+    })
 })
 
 
@@ -273,14 +297,16 @@ app.get('/impressum',(req, res, next) => {
         res.render('impressum.ejs', {                              
         })
     }else{
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {         
+            meldung : ""           
         })    
     }
 })
 
 app.get('/login',(req, res, next) => {         
     res.cookie('istAngemeldetAls', '')       
-    res.render('login.ejs', {                    
+    res.render('login.ejs', {     
+        meldung : ""               
     })
 })
 
@@ -300,6 +326,7 @@ app.get('/kontoAnlegen',(req, res, next) => {
         })
     }else{
         res.render('login.ejs', {                    
+            meldung : ""
         })    
     }
 })
@@ -360,7 +387,8 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {         
+            meldung : ""           
         })    
     }
 })
@@ -378,7 +406,8 @@ app.get('/stammdatenPflegen',(req, res, next) => {
             meldung : ""                          
         })
     }else{
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {           
+            meldung : ""         
         })    
     }
 })
@@ -421,7 +450,8 @@ app.post('/stammdatenPflegen',(req, res, next) => {
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {          
+            meldung : ""          
         })    
     }
 })
@@ -472,6 +502,7 @@ app.get('/ueberweisen',(req, res, next) => {
         })
     }else{
         res.render('login.ejs', {                    
+            meldung : ""
         })    
     }
 })
@@ -539,7 +570,8 @@ app.post('/ueberweisen',(req, res, next) => {
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {            
+            meldung : ""        
         })    
     }
 })
@@ -558,7 +590,8 @@ app.get('/zinsen',(req, res, next) => {
             meldung : ""                          
         })
     }else{
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {     
+            meldung : ""               
         })    
     }
 })
@@ -597,7 +630,8 @@ app.post('/zinsen',(req, res, next) => {
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
-        res.render('login.ejs', {                    
+        res.render('login.ejs', {                   
+            meldung : "" 
         })    
     }
 })
@@ -622,6 +656,7 @@ app.get('/kontoAnzeigen',(req, res, next) => {
         })
     }else{
         res.render('login.ejs', {                    
+            meldung : ""
         })    
     }
 })
@@ -669,6 +704,7 @@ app.post('/kontoAnzeigen',(req, res, next) => {
         // und als Response
         // an den Browser übergeben.
         res.render('login.ejs', {                    
+            meldung : ""
         })    
     }
 })
