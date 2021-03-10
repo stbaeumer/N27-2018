@@ -703,7 +703,7 @@ app.post('/kontoAnzeigen',(req, res, next) => {
                 // ... wird die kontoAnlegen.ejs gerendert.
         
                 res.render('index.ejs', {                              
-                    meldung : "Kontostand des Kontos mit der Iban " + iban + " ist: " + kontostand + " €.",
+                    meldung : "Der Kontostand des Kontos mit der IBAN " + iban + " beträgt: " + kontostand + " €.",
                     ort : ort,
                     meldungWetter : ""
                 })
