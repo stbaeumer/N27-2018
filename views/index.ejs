@@ -24,8 +24,14 @@
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
         <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
-        <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
+        <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>        
       </nav>   
+      <nav>
+        <form method="POST" action="/">
+          <input class="weather" type="text" name="ort" value="<%= ort %>">          
+        <%= meldungWetter %>
+        </form>
+      </nav>
       <br>
     </header>    
     <form>          
@@ -34,8 +40,6 @@
       <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
       <button formaction="/zinsen">Endkapital ausrechnen</button>
     </form>  
-    <footer>
-      <%= protokollzeile %>
-    </footer>
+    <label><%= meldung %></label>
   </body>
 </html>

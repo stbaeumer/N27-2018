@@ -28,18 +28,30 @@
       </nav>   
       <br>
     </header>
-
-    <!--20210202-->
-
     <form method="POST" action="/ueberweisen">
-        <label>Iban des Empfängers:</label>        
-        <select name="iban">          
-          <% for(var i=0; i< konten.length; i++) {%>              
-            <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
-          <% } %>
+        <label>Meine Iban:</label>
+        
+          <!-- Das select-Tag bietet ein Auswahlmenü. Es können keine Ibans freihändig eingetragen werden.
+          Die von der server.js übergebenen quellkonten werden in einer for-Schleife durchlaufen.
+          Für jedes Quellkonto wird in dem SELECT eine OPTION angelegt.
+
+          i ist die Zählvariable. Nach jedem Schleifendurchlauf wird i um eins erhöht.
+          quellkonten[i] ist dann das erste, zweite usw. Element der Quellkontenliste.
+
+          -->
+        <select name="quellIban">
+          <% for(var i=0; i< quellkonten.length; i++) {%>              
+            <option value="<%= quellkonten[i].iban %>"><%= quellkonten[i].iban %></option>                  
+          <% } %> 
+        </select>
+        <label>Iban des Empfängers:</label>
+        <select name="zielIban">
+          <% for(var i=0; i< zielkonten.length; i++) {%>              
+            <option value="<%= zielkonten[i].iban %>"><%= zielkonten[i].iban %></option>                  
+          <% } %> 
         </select>
         <label>Betrag:</label>
-        <input type="number" name="betrag">
+        <input type="number" name="betrag" min="0.01" step="0.01">
         <label>Verwendungszweck:</label>
         <input type="text" name="verwendungszweck">        
         <button>Überweisung ausführen</button>
