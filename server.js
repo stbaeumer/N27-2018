@@ -1,9 +1,4 @@
 
-// Auf der obersten Ebene wird der Ort deklariert und initialisiert.
-// Somit steht der Wert während der ganzen Laufzeit des Programms zur Verfügung.
-// Alternativ kann der Ort in einem Cookie gespeichert werden.
-
-let ort = "Borken"
 const mysql = require('mysql')
 //const env = process.env.NODE_ENV || 'development';
 //const config = require('./config')[env];
@@ -39,12 +34,12 @@ class Kunde {
     }
 }
 
-let kunde = new Kunde()
+let kunde
 
 // iban ist ein Modul, das wir uns in das Programm installiert haben:
 // npm install iban
 // Eine Konstante wird erstellt. Die Konstante heißt iban.
-// Die Konstente lebt während der ganzen Laufzeit des Programms.
+// Die Konstante lebt während der ganzen Laufzeit des Programms.
 // Die Konstante iban ist ein Objekt, mit möglicherweise vielen Eigenschaften, Funtkionen usw.
 // iban stellt im Programm Funktionalitten zur Verfügung: 
 // * Umwandlung der Kontonummer nach IBAN.
@@ -65,7 +60,7 @@ const dbVerbindung = mysql.createConnection({
 })
 
 dbVerbindung.connect(function(fehler){
-    dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
+    dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), ort VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
@@ -148,12 +143,13 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 app.get('/',(req, res, next) => {   
 
+    console.log(kunde)
     let idKunde = req.cookies['istAngemeldetAls']
 
     if(idKunde){
  
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
-        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
+        weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
             if(err) console.log(err);
     
             // stringify ist eine Funktion, die auf das JSON-Objekt aufgerufen den result in einem
@@ -221,44 +217,53 @@ app.post('/login',(req, res, next) => {
     // Der Wert des Inputs mit dem name = "idkunde" wird über
     // den Request zugewiesen an die Konstante idKunde
     const idKunde = req.body.idKunde
+    // Der Wert des Inputs mit dem Namen "kennwort" wird requested und zugewiesen an eine
+    // Konstante namens kennwort.
     const kennwort = req.body.kennwort
     
     dbVerbindung.connect(function(fehler){
+        
+        // Alle Spalten (*) werden ausgewählt. Es wird auf alle zeilen gefiltert, bei denen die ID-Kunde
+        // und das Kennwort matcht.
         dbVerbindung.query('SELECT * FROM kunde WHERE idKunde = ' + idKunde + ' AND kennwort = "' + kennwort + '";', function (fehler, result) {
+            
+            // Wenn ein Fehler passiert, wird der Fehler geworfen.
+            // Wenn ein Fehler passiert, ist das Fehler-Objekt nicht NULL. 
+            // Ein Objekt, das nicht NULL ist, ist true.
             if (fehler) throw fehler
             
             console.log(result.length)
     
-            // Wenn die Anzahl der Einträge im result 1 ist, dann wird die Index geladen
+            // Wenn die Anzahl der Einträge im result 1 ist, dann existiert genau ein Kunde 
+            // mit dieser Kombination aus idKunde und Kennwort.
 
             if(result.length == 1){
                 
-            // Deklaration "let kunde" und Instanziierung "= new Kunde()"
-            // Bei der Instanziierung werden Speicherzellen reserviert.
-            // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
+                // Deklaration "let kunde" und Instanziierung "= new Kunde()"
+                // Bei der Instanziierung werden Speicherzellen reserviert.
+                // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
 
-            kunde = new Kunde()
+                kunde = new Kunde()
 
-            // Initialisierung
+                // Initialisierung
 
-            kunde.IdKunde = result[0].idKunde
-            kunde.Nachname = result[0].nachname
-            kunde.Vorname = result[0].vorname        
-            kunde.Mail = result[0].mail
+                // Der result ist eine Liste von Datensätzen. Wir wissen, dass diese Liste nur einen
+                // Datensatz enthält. Also greifen wir uns die Eigenschaftswerte dieses datensatzes über
+                // die Angabe des Index hinter dem result. [0] steht für den ersten Datensatz
 
-            console.log("Der Cookie wird gesetzt: " + idKunde)
+                kunde.IdKunde = result[0].idKunde
+                kunde.Nachname = result[0].nachname
+                kunde.Vorname = result[0].vorname        
+                kunde.Mail = result[0].mail
+                kunde.Ort = result[0].ort
+
+                console.log("Der Cookie wird gesetzt: " + idKunde)
             
             console.log(kunde)
             
             res.cookie('istAngemeldetAls', idKunde)
-
-                let neuerOrt = req.body.ort
-        
-                if(neuerOrt){
-                    ort = neuerOrt
-                }
-        
-                weather.find({search: ort, degreeType: 'C'}, function(err, result) {
+            
+                weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
                     if(err) console.log(err);
             
                     res.render('index.ejs', {    
@@ -403,7 +408,11 @@ app.get('/stammdatenPflegen',(req, res, next) => {
         // ... dann wird kontoAnlegen.ejs gerendert.
         
         res.render('stammdatenPflegen.ejs', {    
-            meldung : ""                          
+            meldung : "",
+            nachname : kunde.Nachname,
+            vorname : kunde.Vorname,
+            ort : kunde.Ort,
+            mail : kunde.Mail
         })
     }else{
         res.render('login.ejs', {           
@@ -419,33 +428,45 @@ app.post('/stammdatenPflegen',(req, res, next) => {
     if(idKunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
-        // Nur, wenn das Input namens nachname nicht leer ist, wird der
-        // Nachname neu gesetzt.
+        let nachname = req.body.nachname
+        let vorname = req.body.vorname
+        let mail = req.body.mail
+        let kennwort = req.body.kennwort
+        let ort = req.body.ort
 
-        var erfolgsmeldung = "Stammdaten wurden aktualisiert. ";
+        // Wenn einer der Eigenschftswerte verändert wurde, ...
 
-        if(req.body.nachname){
-            kunde.Nachname = req.body.nachname
-            erfolgsmeldung += "; Neuer Nachname: " + kunde.Nachname
-        }
-        
-        if(req.body.kennwort){
-            kunde.Kennwort = req.body.kennwort
-            erfolgsmeldung += "; Neues Kennwort: " + kunde.Kennwort
-        }
+        if (nachname != kunde.Nachname || vorname != kunde.Vorname || mail != kunde.Mail || kennwort != kunde.Kennwort || ort != kunde.Ort){
 
-        if(req.body.mail){
-            if(validator.validate(req.body.mail)){
-                kunde.Mail = req.body.mail
-                erfolgsmeldung += "; Neue E-Mail: " + kunde.Mail
-            }else{
-                erfolgsmeldung += "; Die E-Mail " + req.body.mail + " ist syntaktisch falsch und wird nicht aktualisiert."    
-            }            
+            // dann wird die Datenbank geöffnet ...
+            dbVerbindung.connect(function(fehler){
+
+                // und der Kundendatensatz aktualisiert
+
+                if (kennwort == ""){
+                    kennwort = kunde.Kennwort
+                }
+
+                dbVerbindung.query('UPDATE kunde SET nachname = "' + nachname + '", ort = "' + ort + '", kennwort = "' + kennwort + '", vorname = "' + vorname +'" WHERE (idKunde = ' + kunde.IdKunde + ');', function (fehler) {
+                    if (fehler) throw fehler
+         
+                    console.log("Stammdaten wurden erfolgreich aktualisiert")
+                    kunde.Nachname = nachname
+                    kunde.Vorname = vorname
+                    kunde.Mail = mail
+                    kunde.Ort = ort
+                    kunde.Kennwort = kennwort
+
+                    res.render('stammdatenPflegen.ejs', {                              
+                        meldung : "Stammdaten wurden erfolgreich aktualisiert",
+                        nachname : kunde.Nachname,
+                        vorname : kunde.Vorname,
+                        mail : kunde.Mail,
+                        ort : kunde.Ort
+                    })
+                })
+            })
         }
-        
-        res.render('stammdatenPflegen.ejs', {                              
-            meldung : erfolgsmeldung
-        })
     }else{
         // Die login.ejs wird gerendert 
         // und als Response
