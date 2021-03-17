@@ -149,8 +149,15 @@ app.get('/',(req, res, next) => {
     if(idKunde){
  
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
-        weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
-            if(err) console.log(err);
+        weather.find({search: kunde.Ort, degreeType: 'C'}, function(fehler, result) {
+            
+            // Wenn ein Fehler auftritt, werden wir auf die Login-Seite zurückgeworfen, 
+            // weil das Kundenobjekt dann NULL ist
+            if(fehler){
+                res.render('login.ejs', {      
+                    meldung : "Bitte erneut anmelden!"
+                })            
+            }
     
             // stringify ist eine Funktion, die auf das JSON-Objekt aufgerufen den result in einem
             // langen String zurückgibt. 
@@ -162,7 +169,7 @@ app.get('/',(req, res, next) => {
             console.log("Vom ersten Element die aktuelle Temperatur :" + result[0].current.temperature);
  
             res.render('index.ejs', {    
-                ort : ort,
+                ort : kunde.Ort,
                 meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
                 meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"    
             }) 
@@ -217,6 +224,7 @@ app.post('/login',(req, res, next) => {
     // Der Wert des Inputs mit dem name = "idkunde" wird über
     // den Request zugewiesen an die Konstante idKunde
     const idKunde = req.body.idKunde
+    
     // Der Wert des Inputs mit dem Namen "kennwort" wird requested und zugewiesen an eine
     // Konstante namens kennwort.
     const kennwort = req.body.kennwort
@@ -256,6 +264,7 @@ app.post('/login',(req, res, next) => {
                 kunde.Vorname = result[0].vorname        
                 kunde.Mail = result[0].mail
                 kunde.Ort = result[0].ort
+                kunde.Kennwort = result[0].kennwort
 
                 console.log("Der Cookie wird gesetzt: " + idKunde)
             
@@ -412,7 +421,8 @@ app.get('/stammdatenPflegen',(req, res, next) => {
             nachname : kunde.Nachname,
             vorname : kunde.Vorname,
             ort : kunde.Ort,
-            mail : kunde.Mail
+            mail : kunde.Mail,
+            kennwort : kunde.Kennwort
         })
     }else{
         res.render('login.ejs', {           
@@ -445,6 +455,7 @@ app.post('/stammdatenPflegen',(req, res, next) => {
 
                 if (kennwort == ""){
                     kennwort = kunde.Kennwort
+                    console.log("Kunden: " + kunde.Nachname)
                 }
 
                 dbVerbindung.query('UPDATE kunde SET nachname = "' + nachname + '", ort = "' + ort + '", kennwort = "' + kennwort + '", vorname = "' + vorname +'" WHERE (idKunde = ' + kunde.IdKunde + ');', function (fehler) {
@@ -457,12 +468,15 @@ app.post('/stammdatenPflegen',(req, res, next) => {
                     kunde.Ort = ort
                     kunde.Kennwort = kennwort
 
+                    console.log(kunde)
+
                     res.render('stammdatenPflegen.ejs', {                              
                         meldung : "Stammdaten wurden erfolgreich aktualisiert",
                         nachname : kunde.Nachname,
                         vorname : kunde.Vorname,
                         mail : kunde.Mail,
-                        ort : kunde.Ort
+                        ort : kunde.Ort,
+                        kennwort : kunde.Kennwort
                     })
                 })
             })
