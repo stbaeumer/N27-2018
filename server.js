@@ -36,13 +36,6 @@ class Kunde {
     }
 }
 
-// TODO 20210324
-
-// Deklaration einer Variablen namens Kunde auf der obersten Ebene des Programms. Das Objekt lebt während der
-// gesamten Laufzeit des Programms, weil es auf der obersten Ebene deklariert wurde.
-
-let kunde
-
 // iban ist ein Modul, das wir uns in das Programm installiert haben: npm install iban
 // Eine Konstante wird erstellt. Die Konstante heißt iban. Diese Konstante lebt während der ganzen Laufzeit des Programms, 
 // weil sie auf der obersten Ebene des Programms deklariert wird.
@@ -244,7 +237,7 @@ app.post('/login',(req, res, next) => {
                 // Bei der Instanziierung werden Speicherzellen reserviert.
                 // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
 
-                kunde = new Kunde()
+                let kunde = new Kunde()
 
                 // Initialisierung
 
@@ -259,10 +252,15 @@ app.post('/login',(req, res, next) => {
                 kunde.Ort = result[0].ort
                 kunde.Kennwort = result[0].kennwort
                 
-                // TODO 20210324
-
                 console.log(kunde)
                 
+                // Der Browser kann während des Hin- und Herschaltens in der App nicht wissen,
+                // dass immer dieselbe Person vor ihm sitzt. Damit der Browser während der ganzen Sitzung 
+                // weiß, wer ihn bedient, wird das ganze Kundenobjekt im Cookie gespeichert.
+                // Da der Cookie nur einen Text aufnehmen kann, das Kundenobbejkt aber ein komplexer Datentyp
+                // ist, wird mit der Methode JSON.stringify() das Kundenobjekt in einen String umgewandelt.
+                // Zuletzt wird der Cookie an den Browser respondet
+
                 res.cookie('istAngemeldetAls', JSON.stringify(kunde))
 
                 console.log("Der Cookie wird gesetzt: " + JSON.stringify(kunde))
@@ -294,19 +292,23 @@ app.post('/login',(req, res, next) => {
 
 app.get('/impressum',(req, res, next) => {   
 
-    // TODO 20210324
-    let kun = new Kunde()
+    // Beim Klick auf die Impressum-Seite wird bei jedem einzelnen Benutzer der App
+    // ein neues Kundenobjekt deklariert und instanziiert.
+
+    let kunde = new Kunde()
     
     console.log("Der JSON-Cookie wird zu einem Objekt vom Typ 'kunde' umgewandelt: ")
     
-    kun = JSON.parse(req.cookies['istAngemeldetAls'])
+    // Mit der Methode JSON.parse() wird das stringifizierte Kundenobjekt in ein Objekt vom Typ Kunde umgewandelt.
+
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    console.log(kun)
-    console.log("ID des Kunden" + kun.IdKunde)
+    console.log(kunde)
+    console.log("ID des Kunden" + kunde.IdKunde)
 
-    if(kun){
+    if(kunde){
 
-        console.log("Kunde ist angemeldet als " + kun)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird impressum.ejs gerendert.
         
@@ -329,11 +331,13 @@ app.get('/login',(req, res, next) => {
 // Wenn die Seite localhost:3000/kontoAnlegen angesurft wird, ...
 
 app.get('/kontoAnlegen',(req, res, next) => {   
-
-    let idKunde = req.cookies['istAngemeldetAls']
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    let kunde = new Kunde()
+    
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+    if(kunde){
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
         
@@ -350,11 +354,12 @@ app.get('/kontoAnlegen',(req, res, next) => {
 // Wenn der Button auf der kontoAnlegen-Seite gedrückt wird, ...
 
 app.post('/kontoAnlegen',(req, res, next) => {   
-
-    let idKunde = req.cookies['istAngemeldetAls']
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    let kunde = new Kunde()    
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+    if(kunde){
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         let konto = new Konto()
 
@@ -372,11 +377,11 @@ app.post('/kontoAnlegen',(req, res, next) => {
             konto.Kontoart = req.body.kontoart
             const bankleitzahl = 27000000
             const laenderkennung = "DE"
-            konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + idKunde + konto.Kontonummer)
+            konto.Iban = iban.fromBBAN(laenderkennung,bankleitzahl + " " + kunde.IdKunde + konto.Kontonummer)
             
             // Füge das Konto in die MySQL-Datenbank ein
         
-            dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + idKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
+            dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + kunde.IdKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
                 if (fehler) {
                     if(fehler.code == "ER_DUP_ENTRY"){
                         console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
@@ -411,9 +416,10 @@ app.post('/kontoAnlegen',(req, res, next) => {
 
 app.get('/stammdatenPflegen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
+    if(kunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
@@ -435,10 +441,11 @@ app.get('/stammdatenPflegen',(req, res, next) => {
 
 app.post('/stammdatenPflegen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde()    
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    if(kunde){
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         let nachname = req.body.nachname
         let vorname = req.body.vorname
