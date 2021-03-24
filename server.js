@@ -1,11 +1,15 @@
+// Das Modul mysql wird in das Programm geladen. Es ist zuvor mit npm install mysql installiert worden.
+// MySQL stellt Datenbankfunktionalität zur Verfügung. Datenbanken werden immer dann benötigt, wenn Daten
+// außerhalb der Laufzeit des Programms verfügbar sein sollen.
 
 const mysql = require('mysql')
-//const env = process.env.NODE_ENV || 'development';
-//const config = require('./config')[env];
 
-// Klassendefinition der Klasse Konto. 
-// Die Klasse ist der Bauplan, der alle rele- 
-// vanten Eigenschaften enthält.
+// Klassendefinition der Klasse Konto. Die Klasse ist der Bauplan, der alle relevanten Eigenschaften enthält.
+// Alle Objekte, die von dieser Klasse erzeugt werden, haben dieselben Eigenschaften, aber ggfs. unterschiedliche
+// Eigenschaftswerte.
+
+// Die Funktionalitäten des weather-Moduls werden der Konstanten weather zugewiesen.
+const weather = require('weather-js');
 
 class Konto{
     constructor(){
@@ -16,10 +20,8 @@ class Konto{
     }
 }
 
-// Klassendefinition
-// Die Klasse ist der Bauplan, von dem Kunden-Objekte erstellt werden.
-// Alle Objekte vom Typ Kunde haben dieselben Eigenschaften.
-// Die Eigenschaftswerte können unterschiedlich sein.
+// Klassendefinition der Klasse Kunde. Die Klasse ist der Bauplan, von dem Kunden-Objekte erstellt werden.
+// Alle Objekte vom Typ Kunde haben dieselben Eigenschaften. Die Eigenschaftswerte können unterschiedlich sein.
 
 class Kunde {
     constructor(){
@@ -34,13 +36,20 @@ class Kunde {
     }
 }
 
+// TODO 20210324
+
+// Deklaration einer Variablen namens Kunde auf der obersten Ebene des Programms. Das Objekt lebt während der
+// gesamten Laufzeit des Programms, weil es auf der obersten Ebene deklariert wurde.
+
 let kunde
 
-// iban ist ein Modul, das wir uns in das Programm installiert haben:
-// npm install iban
-// Eine Konstante wird erstellt. Die Konstante heißt iban.
-// Die Konstante lebt während der ganzen Laufzeit des Programms.
+// iban ist ein Modul, das wir uns in das Programm installiert haben: npm install iban
+// Eine Konstante wird erstellt. Die Konstante heißt iban. Diese Konstante lebt während der ganzen Laufzeit des Programms, 
+// weil sie auf der obersten Ebene des Programms deklariert wird.
+// Das besondere am Typ const ist, dass ein Wert einmalig zugewiesen werden kann, danach aber nicht mehr verändert werden darf.
 // Die Konstante iban ist ein Objekt, mit möglicherweise vielen Eigenschaften, Funtkionen usw.
+// Objekte mit (möglicherweise) vielen verschiedenenen Eigenschaften nennt man komplexe Datentypen. 
+// Demgegenüber sind einfache Zeichenketten (z.B. eine Id oder eine Schuhgröße) primitiv (=einwertig)
 // iban stellt im Programm Funktionalitten zur Verfügung: 
 // * Umwandlung der Kontonummer nach IBAN.
 // * Validierung einer IBAN.
@@ -50,14 +59,15 @@ const iban = require('iban')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const validator = require("email-validator");
 
 const dbVerbindung = mysql.createConnection({
-    host: '130.255.124.99', //130.255.124.99
+    host: '130.255.124.99', // öffentliche IP-Adresse, unter der der Datenbankserver erreichbar ist.
     user: 'placematman',
     password: "BKB123456!",
-    database: "dbn27"
+    database: "dbn27" // Name der Datenbank. Diese Datenbank enthält dann alle unsere Tabellen.
 })
+
+// Der Connect zur Datenbank wird aufgebaut. 
 
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), ort VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
@@ -71,6 +81,7 @@ dbVerbindung.connect(function(fehler){
             console.log("Tabelle Kunde erfolgreich angelegt.")
         }
     })
+    // Die Verbindung zur Datenbank wird abgebaut:
 })
 
 dbVerbindung.connect(function(fehler){
@@ -91,8 +102,8 @@ dbVerbindung.connect(function(fehler){
 // Ein neue Tabelle ist zu erstellen namens kontobewegung.
 // Primary Key: iban, timestamp
 // Foreign Key: iban     // Der FK verhindert, dass eine Kontobewegung zu einer fiktiven iban angelegt wird.   
-                        // Durch die Foreign Key-Angabe wird verhindert, dass ein Konto gelöscht wird, zu dem es noch Kontobewegungen gibt.
-
+                         // Durch die Foreign Key-Angabe wird verhindert, dass ein Konto gelöscht wird, zu dem es noch Kontobewegungen gibt.
+// Fehler, die die Datenbank auf diese Weise für uns verhindert, nennt man Anomalien oder auch Foreign-Key-Constraint.  
 
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kontobewegung(quellIban VARCHAR(22), zielIban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(quellIban, timestamp), FOREIGN KEY (quellIban) REFERENCES konto(iban));', function (fehler) {
@@ -100,7 +111,7 @@ dbVerbindung.connect(function(fehler){
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kontobewegung existiert bereits und wird nicht angelegt.")
             }else{
-                console.log("Fehler: " + fehler )
+                console.log("Fehler: " + fehler.code)
             }
         }else{
             console.log("Tabelle kontobewegung erfolgreich angelegt.")
@@ -108,24 +119,7 @@ dbVerbindung.connect(function(fehler){
     })
 })
 
-
-/*
 // Kunde in die Datenbank schreiben, sofern er noch nicht angelegt ist
-
-dbVerbindung.query('INSERT INTO kunde(idKunde,vorname,nachname,mail,kennwort) VALUES (' + kunde.IdKunde + ',"' + kunde.Vorname + '","' + kunde.Nachname + '","' + kunde.Mail + '","' + kunde.Kennwort + '");', function (fehler) {
-    if (fehler) {
-        if(fehler.code == "ER_DUP_ENTRY"){
-            console.log("Kunde mit ID " + kunde.IdKunde + " existiert bereits und wird nicht erneut in DB angelegt." );
-        }else{
-            console.log("Fehler: " + fehler.code)
-        }
-    }else{
-        console.log('Kunde mit ID ' + kunde.IdKunde + " erfolgreich in DB angelegt.");
-    }
-})*/
-
-// Die Funktionalitäten des weather-Moduls werden der Konstanten weather zugewiesen.
-const weather = require('weather-js');
 
 const app = express()
 app.set('view engine', 'ejs')
@@ -189,8 +183,7 @@ app.post('/',(req, res, next) => {
     
     if(idKunde){
         console.log("Der Cookie wird gesetzt: " + idKunde)
-        res.cookie('istAngemeldetAls', idKunde)
-
+        res.cookie('istAngemeldetAls', idKunde)        
         let neuerOrt = req.body.ort
 
         // Wenn der neueOrt aus dem Input nicht leer oder null ist, dann
@@ -265,12 +258,14 @@ app.post('/login',(req, res, next) => {
                 kunde.Mail = result[0].mail
                 kunde.Ort = result[0].ort
                 kunde.Kennwort = result[0].kennwort
+                
+                // TODO 20210324
 
-                console.log("Der Cookie wird gesetzt: " + idKunde)
-            
-            console.log(kunde)
-            
-            res.cookie('istAngemeldetAls', idKunde)
+                console.log(kunde)
+                
+                res.cookie('istAngemeldetAls', JSON.stringify(kunde))
+
+                console.log("Der Cookie wird gesetzt: " + JSON.stringify(kunde))
             
                 weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
                     if(err) console.log(err);
@@ -295,16 +290,23 @@ app.post('/login',(req, res, next) => {
     })
 })
 
-
-
 // Wenn die Seite localhost:3000/impressum aufgerufen wird, ...
 
 app.get('/impressum',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    // TODO 20210324
+    let kun = new Kunde()
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    console.log("Der JSON-Cookie wird zu einem Objekt vom Typ 'kunde' umgewandelt: ")
+    
+    kun = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+    console.log(kun)
+    console.log("ID des Kunden" + kun.IdKunde)
+
+    if(kun){
+
+        console.log("Kunde ist angemeldet als " + kun)
         
         // ... dann wird impressum.ejs gerendert.
         
