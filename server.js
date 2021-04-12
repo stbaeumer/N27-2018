@@ -11,8 +11,13 @@ const mysql = require('mysql')
 // Die Funktionalitäten des weather-Moduls werden der Konstanten weather zugewiesen.
 const weather = require('weather-js');
 
+// Klassendefinition (=Bauplan) der Klasse Konto.
+// Von der Klasse werden Objekte der Klasse Konto erzeugt.
+// Alle Objekte der Klasse Konto werden kleingeschrieben. 
+
 class Konto{
     constructor(){
+        // Eigenschaften: 
         this.IdKunde
         this.Kontonummer
         this.Kontoart
@@ -53,6 +58,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
+// Auf das mysql-Objekt wird eine Funktion namens createConnection() aufgerufen.
+// Funktionen erkennt man an ()
+// Funktionen machen etwas. Sie lassen sich also durch ein Verb beschreiben.
+// Der Name von Funktionen enthält meistens ein Verb.
+// Die Funktion createConnection nimmt alle Verbindungsparameter entgegen.
+
 const dbVerbindung = mysql.createConnection({
     host: '130.255.124.99', // öffentliche IP-Adresse, unter der der Datenbankserver erreichbar ist.
     user: 'placematman',
@@ -61,6 +72,8 @@ const dbVerbindung = mysql.createConnection({
 })
 
 // Der Connect zur Datenbank wird aufgebaut. 
+// Die Schachtelung in Javascript muss sein, weil ansonsten die Anweisung .query('CREATE..) nicht
+// darauf warten würde, dass die Verbindung zur Datenbank mit .connect() steht.
 
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), ort VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
@@ -99,6 +112,13 @@ dbVerbindung.connect(function(fehler){
 // Fehler, die die Datenbank auf diese Weise für uns verhindert, nennt man Anomalien oder auch Foreign-Key-Constraint.  
 
 dbVerbindung.connect(function(fehler){
+
+    // Mit der Angabe des FK: (FOREIGN KEY (quellIban) REFERENCES konto(iban)) werden 
+    // Anomalien verhindert. Es ist durch die Angabe des FK nicht möglich ein Konto
+    // zu löschen, zu dem noch Kontobewegungen existieren. (LÖSCHANOMALIE)
+    // Es ist auch nicht möglich eine Kontobewegung zu einer IBAN einzutragen, 
+    // die es nicht gibt. (EINFÜGEANOMALIE)
+
     dbVerbindung.query('CREATE TABLE kontobewegung(quellIban VARCHAR(22), zielIban VARCHAR(22), betrag DECIMAL(15,2), verwendungszweck VARCHAR(378), timestamp TIMESTAMP, PRIMARY KEY(quellIban, timestamp), FOREIGN KEY (quellIban) REFERENCES konto(iban));', function (fehler) {
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
@@ -130,10 +150,18 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 app.get('/',(req, res, next) => {   
 
-    console.log(kunde)
-    let idKunde = req.cookies['istAngemeldetAls']
+    // Das Kundenobjekt wird instanziiert.
+    let kunde = new Kunde()
 
-    if(idKunde){
+    // Der Cookie speichert das Kundenobjekt als primitiven, einwertigen String.
+    console.log(req.cookies['istAngemeldetAls'])
+
+    // Das Kundenobjekt wird aus dem Cookie initialisiert.
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+    console.log(kunde)
+
+    if(kunde){
  
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
         weather.find({search: kunde.Ort, degreeType: 'C'}, function(fehler, result) {
@@ -172,11 +200,12 @@ app.post('/',(req, res, next) => {
     
     console.log("app.post(/...")
     
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
-        console.log("Der Cookie wird gesetzt: " + idKunde)
-        res.cookie('istAngemeldetAls', idKunde)        
+    if(kunde){
+        console.log("Der Cookie wird gesetzt: " + kunde.IdKunde)
+        res.cookie('istAngemeldetAls', kunde.IdKunde)        
         let neuerOrt = req.body.ort
 
         // Wenn der neueOrt aus dem Input nicht leer oder null ist, dann
@@ -332,8 +361,7 @@ app.get('/login',(req, res, next) => {
 
 app.get('/kontoAnlegen',(req, res, next) => {   
     
-    let kunde = new Kunde()
-    
+    let kunde = new Kunde()    
     kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
     if(kunde){
@@ -366,7 +394,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
-        konto.IdKunde = idKunde
+        konto.IdKunde = kunde.IdKunde
         konto.Kontonummer = req.body.kontonummer
         
         if(konto.Kontonummer == "" || konto.Kontonummer.length != 4){
@@ -490,7 +518,7 @@ app.post('/stammdatenPflegen',(req, res, next) => {
                 })
             })
         }
-    }else{
+    }else{W
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
@@ -504,13 +532,12 @@ app.post('/stammdatenPflegen',(req, res, next) => {
 
 app.get('/ueberweisen',(req, res, next) => {   
 
-    // Der Cookie mit dem Namen 'istAngemeldetAls' wird abgefragt und der Variablen idKunde zugewiesen.
-
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
     // Wenn idKunde ungleich leer oder null, dann ist der Wert von idKunde == true
 
-    if(idKunde){
+    if(kunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
         // Es wird eine neue Variable deklariert namens quellkonten. Die Variable lebt innerhalb der if(idKunde)-Kontrollstruktur.
@@ -518,7 +545,7 @@ app.get('/ueberweisen',(req, res, next) => {
         let quellkonten
 
         dbVerbindung.connect(function(fehler){
-            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, quellkontenResult) {
+            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + kunde.IdKunde + '";', function (fehler, quellkontenResult) {
                 if (fehler) throw fehler
                 
                 console.log(quellkontenResult)
@@ -555,11 +582,12 @@ app.get('/ueberweisen',(req, res, next) => {
 
 app.post('/ueberweisen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
+    if(kunde){
 
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Die quelliban und zieliban wird "requestet", d. h. beim Browser angefragt und den Variablen zugewiesen
 
@@ -631,10 +659,11 @@ app.post('/ueberweisen',(req, res, next) => {
 
 app.get('/zinsen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    if(kunde){
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
         
@@ -650,9 +679,10 @@ app.get('/zinsen',(req, res, next) => {
 
 app.post('/zinsen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
+    if(kunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
         var zinssatz = parseFloat(req.body.zinssatz)
@@ -690,15 +720,16 @@ app.post('/zinsen',(req, res, next) => {
 
 app.get('/kontoAnzeigen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
-        console.log("Kunde ist angemeldet als " + idKunde)
+    if(kunde){
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Hier muss die Datenbank abgefragt werden.
 
         dbVerbindung.connect(function(fehler){
-            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + idKunde + '";', function (fehler, result) {
+            dbVerbindung.query('SELECT iban FROM konto WHERE idKunde = "' + kunde.IdKunde + '";', function (fehler, result) {
                 if (fehler) throw fehler
                 
                 res.render('kontoAnzeigen.ejs', {    
@@ -715,11 +746,12 @@ app.get('/kontoAnzeigen',(req, res, next) => {
 
 app.post('/kontoAnzeigen',(req, res, next) => {   
 
-    let idKunde = req.cookies['istAngemeldetAls']
+    let kunde = new Kunde();
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(idKunde){
+    if(kunde){
 
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Die Iban wird requestet       
 
