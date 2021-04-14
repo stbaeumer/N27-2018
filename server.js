@@ -75,8 +75,21 @@ const dbVerbindung = mysql.createConnection({
 // Die Schachtelung in Javascript muss sein, weil ansonsten die Anweisung .query('CREATE..) nicht
 // darauf warten würde, dass die Verbindung zur Datenbank mit .connect() steht.
 
+// Datentypen in MySQL:
+// INT      :           Ganzzahl            :   1,2,3, ..., 100
+// VARCHAR  :           Zeichenkette        :   ABc123!"§"
+// CHAR     :           Zeichenkette, die mit Leerzeichen aufgefüllt wird.  : "    ABC"
+// DECIMAL  :           Fließkommazahl      :   1234,124533
+// TIMESTAMP:           Zeitstempel
+// DATETIME
+
 dbVerbindung.connect(function(fehler){
     dbVerbindung.query('CREATE TABLE kunde(idKunde INT(11), vorname VARCHAR(45), nachname VARCHAR(45), ort VARCHAR(45), kennwort VARCHAR(45), mail VARCHAR(45), PRIMARY KEY(idKunde));', function (fehler) {
+        
+        // if(fehler) ist gleichbedeutend mit if(fehler != undefined), das liegt daran:
+        //  dass in Javascript instanziierte Objekte true sind.
+        // Es kann also hier auf einen Vergleichopertator verzichtet werden.
+        
         if (fehler) {
             if(fehler.code == "ER_TABLE_EXISTS_ERROR"){
                 console.log("Tabelle kunde existiert bereits und wird nicht angelegt.")
@@ -84,6 +97,8 @@ dbVerbindung.connect(function(fehler){
                 console.log("Fehler: " + fehler )
             }
         }else{
+            // Wenn das Fehlerobjekt undefined ist, also es keinen Fehler gibt, dann
+            // wird der Rumpf von else ausgeführt:
             console.log("Tabelle Kunde erfolgreich angelegt.")
         }
     })
@@ -149,20 +164,26 @@ const server = app.listen(process.env.PORT || 3000, () => {
 // Wenn die Startseite im Browser aufgerufen wird, ...
 
 app.get('/',(req, res, next) => {   
+   
+    if(req.cookies['istAngemeldetAls'] != ""){
 
+    console.log(req.cookies['istAngemeldetAls'])
+    
     // Das Kundenobjekt wird instanziiert.
+    // Deklaration = Bekanntgabe: let kunde
+    // Instanziierung = Erkennbar am reservierten Wort "new". Speicherzellen im Arbeitsspeicher werden reserviert.
+    // Initialisierung: Werte werden Werte zugewiesen und in die reservierten Speicherzellen geschrieben.
+    
     let kunde = new Kunde()
 
     // Der Cookie speichert das Kundenobjekt als primitiven, einwertigen String.
-    console.log(req.cookies['istAngemeldetAls'])
+    console.log("Cookie:")
 
     // Das Kundenobjekt wird aus dem Cookie initialisiert.
     kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
     console.log(kunde)
 
-    if(kunde){
- 
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
         weather.find({search: kunde.Ort, degreeType: 'C'}, function(fehler, result) {
             
@@ -182,14 +203,15 @@ app.get('/',(req, res, next) => {
             // Der Result ist eine Liste von Objekten. Wenn der angegebene Ortsname mehrfach existiert, hat die Liste mehr als einen Eintrag.
             console.log("Vom ersten Element der Name des Orts " + result[0].location.name);
             console.log("Vom ersten Element die aktuelle Temperatur :" + result[0].current.temperature);
- 
+    
             res.render('index.ejs', {    
                 ort : kunde.Ort,
                 meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
                 meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"    
             }) 
         });        
-    }else{
+    }    
+    else{
         res.render('login.ejs', {      
             meldung : ""
         })    
@@ -198,14 +220,11 @@ app.get('/',(req, res, next) => {
 
 app.post('/',(req, res, next) => {   
     
-    console.log("app.post(/...")
-    
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    if(kunde){
-        console.log("Der Cookie wird gesetzt: " + kunde.IdKunde)
-        res.cookie('istAngemeldetAls', kunde.IdKunde)        
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+            
         let neuerOrt = req.body.ort
 
         // Wenn der neueOrt aus dem Input nicht leer oder null ist, dann
@@ -226,8 +245,6 @@ app.post('/',(req, res, next) => {
             }) 
         });        
     }else{            
-        console.log("Der Cookie wird gelöscht")
-        res.cookie('istAngemeldetAls','')
         res.render('login.ejs', {     
             meldung : ""               
         })
@@ -292,7 +309,7 @@ app.post('/login',(req, res, next) => {
 
                 res.cookie('istAngemeldetAls', JSON.stringify(kunde))
 
-                console.log("Der Cookie wird gesetzt: " + JSON.stringify(kunde))
+                console.log("Der Cookie nach Login wird gesetzt: " + JSON.stringify(kunde))
             
                 weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
                     if(err) console.log(err);
@@ -305,7 +322,7 @@ app.post('/login',(req, res, next) => {
                 });
             }else{
 
-                // Wenn die Anzahl der Einträge != 1 ist, dann bleiben wir auf der Login-Seite
+                // Wenn die Anzahl der passenden Einträge in der Datenbank != 1 ist, dann bleiben wir auf der Login-Seite
 
                 console.log("Der Cookie wird gelöscht")
                 res.cookie('istAngemeldetAls','')
@@ -323,20 +340,14 @@ app.get('/impressum',(req, res, next) => {
 
     // Beim Klick auf die Impressum-Seite wird bei jedem einzelnen Benutzer der App
     // ein neues Kundenobjekt deklariert und instanziiert.
-
-    let kunde = new Kunde()
     
-    console.log("Der JSON-Cookie wird zu einem Objekt vom Typ 'kunde' umgewandelt: ")
-    
-    // Mit der Methode JSON.parse() wird das stringifizierte Kundenobjekt in ein Objekt vom Typ Kunde umgewandelt.
+    if(req.cookies['istAngemeldetAls'] != ""){
 
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    console.log(kunde)
-    console.log("ID des Kunden" + kunde.IdKunde)
-
-    if(kunde){
-
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+        
+        console.log(kunde)
+        console.log("ID des Kunden" + kunde.IdKunde)
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird impressum.ejs gerendert.
@@ -361,10 +372,11 @@ app.get('/login',(req, res, next) => {
 
 app.get('/kontoAnlegen',(req, res, next) => {   
     
-    let kunde = new Kunde()    
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(kunde){
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
@@ -382,11 +394,12 @@ app.get('/kontoAnlegen',(req, res, next) => {
 // Wenn der Button auf der kontoAnlegen-Seite gedrückt wird, ...
 
 app.post('/kontoAnlegen',(req, res, next) => {   
+   
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    let kunde = new Kunde()    
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    if(kunde){
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         let konto = new Konto()
@@ -444,10 +457,12 @@ app.post('/kontoAnlegen',(req, res, next) => {
 
 app.get('/stammdatenPflegen',(req, res, next) => {   
 
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(kunde){
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
         console.log("Kunde ist angemeldet als " + idKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
@@ -469,10 +484,11 @@ app.get('/stammdatenPflegen',(req, res, next) => {
 
 app.post('/stammdatenPflegen',(req, res, next) => {   
 
-    let kunde = new Kunde()    
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(kunde){
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         let nachname = req.body.nachname
@@ -518,7 +534,7 @@ app.post('/stammdatenPflegen',(req, res, next) => {
                 })
             })
         }
-    }else{W
+    }else{
         // Die login.ejs wird gerendert 
         // und als Response
         // an den Browser übergeben.
@@ -531,13 +547,13 @@ app.post('/stammdatenPflegen',(req, res, next) => {
 // Die Funktion wird aufgerufen, wenn die Seite ueberweisen im Browser aufgerufen wird.
 
 app.get('/ueberweisen',(req, res, next) => {   
-
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    // Wenn idKunde ungleich leer oder null, dann ist der Wert von idKunde == true
+    if(req.cookies['istAngemeldetAls'] != ""){
 
-    if(kunde){
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+
         console.log("Kunde ist angemeldet als " + idKunde)
         
         // Es wird eine neue Variable deklariert namens quellkonten. Die Variable lebt innerhalb der if(idKunde)-Kontrollstruktur.
@@ -582,11 +598,11 @@ app.get('/ueberweisen',(req, res, next) => {
 
 app.post('/ueberweisen',(req, res, next) => {   
 
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    if(kunde){
+    if(req.cookies['istAngemeldetAls'] != ""){
 
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Die quelliban und zieliban wird "requestet", d. h. beim Browser angefragt und den Variablen zugewiesen
@@ -658,11 +674,13 @@ app.post('/ueberweisen',(req, res, next) => {
 
 
 app.get('/zinsen',(req, res, next) => {   
-
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(kunde){
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
+
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
@@ -679,10 +697,12 @@ app.get('/zinsen',(req, res, next) => {
 
 app.post('/zinsen',(req, res, next) => {   
 
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+      
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-    if(kunde){
         console.log("Kunde ist angemeldet als " + idKunde)
         
         var zinssatz = parseFloat(req.body.zinssatz)
@@ -720,10 +740,11 @@ app.post('/zinsen',(req, res, next) => {
 
 app.get('/kontoAnzeigen',(req, res, next) => {   
 
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    if(kunde){
+    if(req.cookies['istAngemeldetAls'] != ""){
+
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Hier muss die Datenbank abgefragt werden.
@@ -746,11 +767,11 @@ app.get('/kontoAnzeigen',(req, res, next) => {
 
 app.post('/kontoAnzeigen',(req, res, next) => {   
 
-    let kunde = new Kunde();
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
-    if(kunde){
+    if(req.cookies['istAngemeldetAls'] != ""){
 
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+    
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Die Iban wird requestet       
