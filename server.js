@@ -464,7 +464,7 @@ app.get('/stammdatenPflegen',(req, res, next) => {
         let kunde = new Kunde();
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
         
@@ -555,7 +555,7 @@ app.get('/ueberweisen',(req, res, next) => {
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
 
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // Es wird eine neue Variable deklariert namens quellkonten. Die Variable lebt innerhalb der if(idKunde)-Kontrollstruktur.
 
@@ -656,7 +656,7 @@ app.post('/ueberweisen',(req, res, next) => {
                     res.render('index.ejs', {                              
                         meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt.",
                         meldungWetter : "",
-                        ort : ort
+                        ort : kunde.Ort
                     })
                 }                
             }
@@ -702,7 +702,7 @@ app.post('/zinsen',(req, res, next) => {
       
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-        console.log("Kunde ist angemeldet als " + idKunde)
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         var zinssatz = parseFloat(req.body.zinssatz)
         var anfangskapital = req.body.anfangskapital
@@ -801,7 +801,7 @@ app.post('/kontoAnzeigen',(req, res, next) => {
         
                 res.render('index.ejs', {                              
                     meldung : "Der Kontostand des Kontos mit der IBAN " + iban + " beträgt: " + kontostand + " €.",
-                    ort : ort,
+                    ort : kunde.Ort,
                     meldungWetter : ""
                 })
             })
