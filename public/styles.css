@@ -42,7 +42,7 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1.5vh;  
+  font-size: 2.5vh;  
 }
 
 .login {
@@ -59,7 +59,7 @@ button {
 
 label {    
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 24px;  
+  font-size: 2.5vh;  
   color: rgb(119, 107, 107);
   padding-top: 20px;
   padding-bottom: 20px;
@@ -100,7 +100,7 @@ nav {
   margin-right: -20px;
   font-family: Arial, Helvetica, sans-serif;    
     background-color: rgb(119, 107, 107);   
-    font-size: 20px;
+    font-size: 2vh;
     text-align:center;  
     color: white;
 }
@@ -117,7 +117,7 @@ h2 {
 nav.weather {  
   font-family: Arial, Helvetica, sans-serif;    
     background-color: rgb(0, 153, 255); 
-    font-size: 16px;    
+    font-size: 1.5vh;    
     text-align:center;  
     color: white;
     
@@ -145,6 +145,6 @@ a {
 
 #footer {
   color: white;
-  font-size: 20px; 
+  font-size: 1.5vh; 
   font-family: Arial, Helvetica, sans-serif;
 }
