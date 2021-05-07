@@ -165,7 +165,7 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 app.get('/',(req, res, next) => {   
    
-    if(req.cookies['istAngemeldetAls'] != ""){
+    if(req.cookies['istAngemeldetAls'] != "" && req.cookies['istAngemeldetAls'] != undefined){
 
     console.log(req.cookies['istAngemeldetAls'])
     
@@ -180,8 +180,9 @@ app.get('/',(req, res, next) => {
     console.log("Cookie:")
 
     // Das Kundenobjekt wird aus dem Cookie initialisiert.
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
+    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+        
     console.log(kunde)
 
         // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
@@ -597,9 +598,7 @@ app.get('/ueberweisen',(req, res, next) => {
 // Die app.post wird abgearbeitet, wenn der Button auf dem Formular gedrückt wird.
 
 app.post('/ueberweisen',(req, res, next) => {   
-
     if(req.cookies['istAngemeldetAls'] != ""){
-
         let kunde = new Kunde();
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
@@ -725,6 +724,7 @@ app.post('/zinsen',(req, res, next) => {
             console.log("Endkapital nach " + (gesamtLaufzeit - restLaufzeit) + " Jahren: " + endkapital)
         }
         
+
         res.render('zinsen.ejs', {                              
             meldung : "Aus dem Anfangskapital i.H.v. " + anfangskapital + " Euro wird bei einem Zinssatz von " + zinssatz + " Prozent nach " + gesamtLaufzeit + " Jahren der Endbetrag " + endkapital + " Euro."
         })
