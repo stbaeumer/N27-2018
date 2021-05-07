@@ -6,10 +6,10 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 6vw;  
+  font-size: 16px;  
 }
 
-input {
+input.eingabe {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -17,20 +17,18 @@ input {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 6vw;  
+  font-size: 16px;  
 }
 
-input.weather {
-  width: 55%;
-  padding: 12px 20px;
+input.weather {    
   margin: 8px 0;
   background-color: rgb(0, 153, 255);
   display: inline-block;
   border: 0px solid white;
-  border-radius: 4px;
+  border-radius: 0px;
   box-sizing: border-box;
   color: white;
-  font-size: 4vw; 
+  font-size: 16px; 
   font-family: Arial, Helvetica, sans-serif;
   direction: rtl;
 }
@@ -44,7 +42,7 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 6vw;  
+  font-size: 20px;  
 }
 
 .login {
@@ -61,8 +59,15 @@ button {
 
 label {    
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 6vw;  
-  color: green;
+  font-size: 24px;  
+  color: rgb(119, 107, 107);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  
 }
 
 div {
@@ -70,18 +75,34 @@ div {
   background-color: #f2f2f2;
   padding: 20px;
   width: 70%;
-  margin: 0 auto
+  margin: 0 auto;
+  width: 400px;
+  box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
+  -webkit-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
+  -moz-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
 }
 
 h1 {
-  margin: 0 -601.5rem;  
-  padding: .25rem 1.5rem;
+  margin-left: -20px; 
+  margin-right: -20px;
+  margin-bottom: 0;
+  margin-top: 0px; 
   background:#4CAF50;  
-  border-left: 600rem solid rgb(13, 83, 72);
-  border-right: 600rem solid rgb(13, 83, 72);
   color: white;
-  font-size: 8vw; 
-  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;  
+  font-size: 40px; 
+  font-family: Arial, Helvetica, sans-serif;  
+}
+
+nav {  
+  margin-left: -20px; 
+  margin-right: -20px;
+  font-family: Arial, Helvetica, sans-serif;    
+    background-color: rgb(119, 107, 107);   
+    font-size: 20px;
+    text-align:center;  
+    color: white;
 }
 
 h2 {  
@@ -91,28 +112,15 @@ h2 {
   text-align:center;
 }
 
-nav {  
-  font-family: Arial, Helvetica, sans-serif;    
-    background-color: rgb(119, 107, 107);        
-    font-size: 4vw;    
-    text-align:center;  
-    color: white;
-    margin: 0 -601.5rem;  
-    padding: .25rem 1.5rem;
-    border-left: 600rem solid rgb(13, 83, 72);
-    border-right: 600rem solid rgb(13, 83, 72);
-}
+
 
 nav.weather {  
   font-family: Arial, Helvetica, sans-serif;    
     background-color: rgb(0, 153, 255); 
-    font-size: 4vw;    
+    font-size: 16px;    
     text-align:center;  
     color: white;
-    margin: 0 -601.5rem;  
-    padding: .25rem 1.5rem;
-    border-left: 600rem solid rgb(13, 83, 72);
-    border-right: 600rem solid rgb(13, 83, 72);
+    
 }
  
 a {  
@@ -136,8 +144,7 @@ a {
 }
 
 #footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 2.5rem;            /* Footer height */
+  color: white;
+  font-size: 20px; 
+  font-family: Arial, Helvetica, sans-serif;
 }

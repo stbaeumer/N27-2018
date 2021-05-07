@@ -17,7 +17,9 @@
     <title>N27 - Startseite</title>
   </head>
   <body>    
+    <div>
     <header>
+      <img src="images/n27.png" alt="N27" height="20px"> 
       <h1>Herzlich Willkommen</h1>    
       <nav>
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
@@ -28,7 +30,7 @@
       </nav>
       <nav class="weather"><form method="POST" action="/">
          <input class="weather" type="text" name="ort" value="<%= ort %>">          
-        <%= meldungWetter %>
+          <%= meldungWetter %>
         </form>
       </nav>
       <br>
@@ -41,5 +43,6 @@
     </form>  
     <label><%= meldung %></label>
     <footer id="footer"><nav><a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a></nav></footer>
+  </div>
   </body>
 </html>
