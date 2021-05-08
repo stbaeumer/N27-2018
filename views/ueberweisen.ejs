@@ -46,17 +46,21 @@
           </select>
           <br>
           <label>Ziel-IBAN:</label>
-          
+          <br>
           <select class="iban" name="zielIban">
             <% for(var i=0; i< zielkonten.length; i++) {%>              
               <option value="<%= zielkonten[i].iban %>"><%= zielkonten[i].iban %></option>                  
             <% } %> 
           </select>
-
+          <br>
           <label>Betrag:</label>
+          <br>
           <input class="eingabe" type="number" name="betrag" min="0.01" step="0.01">
+          <br>
           <label>Verwendungszweck:</label>
+          <br>
           <input class="eingabe" type="text" name="verwendungszweck">        
+          <br>
           <button>Überweisung ausführen</button>
         </form>
         <label><%= meldung %></label>

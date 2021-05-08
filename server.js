@@ -424,11 +424,11 @@ app.post('/kontoAnlegen',(req, res, next) => {
             dbVerbindung.query('INSERT INTO konto(iban, idKunde, kontoart, timestamp) VALUES ("' + konto.Iban + '","' + kunde.IdKunde + '","' + konto.Kontoart + '",NOW());', function (fehler) {
                 if (fehler) {
                     if(fehler.code == "ER_DUP_ENTRY"){
-                        console.log("Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
+                        console.log("Das Konto mit der Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
                         // ... wird die kontoAnlegen.ejs gerendert.
 
                         res.render('kontoAnlegen.ejs', {                              
-                            meldung : "Konto mit Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." 
+                            meldung : "Das Konto mit der Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." 
                         })
                     }else{
                         console.log("Fehler: " + fehler.code)
@@ -437,9 +437,9 @@ app.post('/kontoAnlegen',(req, res, next) => {
                         })
                     }
                 }else{
-                    console.log("Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt.");    
+                    console.log("Das Konto mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.");    
                     res.render('index.ejs', {                              
-                        meldung : "Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt.",
+                        meldung : "Das Konto mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.",
                         ort: kunde.Ort,
                         meldungWetter : ""
                     })                             
@@ -726,7 +726,7 @@ app.post('/zinsen',(req, res, next) => {
         
 
         res.render('index.ejs', {                              
-            meldung : "Aus dem Anfangskapital i.H.v. " + anfangskapital + " Euro wird bei einem Zinssatz von " + zinssatz + " Prozent nach " + gesamtLaufzeit + " Jahren der Endbetrag: " + endkapital + " Euro.",
+            meldung : "Aus " + anfangskapital + " € Anfangskapital wird bei einem Zinssatz von " + zinssatz + " % nach " + gesamtLaufzeit + " Jahren: " + endkapital + " €.",
             ort: kunde.Ort,
             meldungWetter: ""
         })
