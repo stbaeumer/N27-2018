@@ -30,12 +30,16 @@
         <h2>Konto anlegen</h2>
         <form method="POST" action="/kontoAnlegen">          
           <label>Kontonummer (4 Ziffern):</label>
+          <br>
           <input class="eingabe" type="text" name="kontonummer" pattern="[0-9]{4}" title="Bitte 4 Ziffern eingeben">
+          <br>
           <label>Kontoart:</label>
+          <br>
           <select name="kontoart">
             <option value="Girokonto">Girokonto</option>
             <option value="Sparkonto">Sparkonto</option>
           </select>
+          <br>
           <button>Konto anlegen</button>
         </form>
         <label><%= meldung %></label>

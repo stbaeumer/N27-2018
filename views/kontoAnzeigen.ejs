@@ -29,12 +29,14 @@
       <div class="body">
         <h2>Kontostand anzeigen</h2>
         <label>Konto wählen:</label>
+        <br>
         <form method="POST" action="/kontoAnzeigen">
           <select class="iban" name="iban">          
             <% for(var i=0; i< konten.length; i++) {%>              
               <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
             <% } %> 
           </select>
+          <br>
           <button>Kontostand jetzt anzeigen</button>
         </form>
       </div>     

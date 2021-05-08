@@ -29,22 +29,26 @@
       <div class="body">   
         <form method="POST" action="/stammdatenPflegen">
           <label>Nachname:</label>
-          <input class="eingabe" type="text"  name="nachname" value="<%= nachname %>">
+          <br>
+          <input class="klein" type="text"  name="nachname" value="<%= nachname %>">
+          <br>
           <label>Vorname:</label>
-          <input class="eingabe" type="text"  name="vorname" value="<%= vorname %>">
+          <br>
+          <input class="klein" type="text"  name="vorname" value="<%= vorname %>">
+          <br>
           <label>Kennwort:</label>
-          <input class="eingabe" type="password" name="kennwort" value="<%= kennwort %>">     
+          <br>
+          <input class="klein" type="password" name="kennwort" value="<%= kennwort %>">     
           <br>   
           <label>Mail:</label>
           <br>   
-          <input class="eingabe" type="email" name="mail" value="<%= mail %>">
+          <input class="klein" type="email" name="mail" value="<%= mail %>">
           <br>   
           <label>Ort:</label>
           <br>   
-          <input class="eingabe" type="text" name="ort" value="<%= ort %>">
+          <input class="klein" type="text" name="ort" value="<%= ort %>">
           <button>Stammdaten Pflegen</button>        
-        </form>
-        <label><%= meldung %></label>
+        </form>       
       </div>     
       <div class="weather"></div>
       <div class="nav">

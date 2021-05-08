@@ -26,9 +26,13 @@
         <h2>Bitte anmelden!</h2>
         <form method="POST">
           <label>Benutzer-ID:</label>
+          <br>
           <input class="eingabe" type="number" min="100000" max="999999" title="Bitte exakt 6 Ziffern eingeben!" name="idKunde">
+          <br>
           <label>Kennwort:</label>      
+          <br>
           <input class="eingabe" type="password" required="required" name="kennwort">      
+          <br>
           <button formaction="/login">Login</button>
         </form>     
         <label><%= meldung %></label>

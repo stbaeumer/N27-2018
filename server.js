@@ -456,11 +456,8 @@ app.post('/kontoAnlegen',(req, res, next) => {
     }
 })
 
-app.get('/stammdatenPflegen',(req, res, next) => {   
-
-    
+app.get('/stammdatenPflegen',(req, res, next) => {       
     if(req.cookies['istAngemeldetAls'] != ""){
-
         let kunde = new Kunde();
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
@@ -515,22 +512,30 @@ app.post('/stammdatenPflegen',(req, res, next) => {
                 dbVerbindung.query('UPDATE kunde SET nachname = "' + nachname + '", ort = "' + ort + '", kennwort = "' + kennwort + '", vorname = "' + vorname +'" WHERE (idKunde = ' + kunde.IdKunde + ');', function (fehler) {
                     if (fehler) throw fehler
          
-                    console.log("Stammdaten wurden erfolgreich aktualisiert")
+                    var geändert = ""
+
+                    if(kunde.Nachname != nachname) geändert += kunde.Nachname + "->" + nachname + " "
+                    if(kunde.Vorname != vorname) geändert += kunde.Vorname + "->" + vorname + " "
+                    if(kunde.Vorname != vorname) geändert += kunde.Vorname + "->" + vorname + " "
+                    if(kunde.Mail != mail) geändert += kunde.Mail + "->" + mail + " "  
+                    if(kunde.Ort != ort) geändert += kunde.Ort + "->" + ort + " "  
+                  
                     kunde.Nachname = nachname
                     kunde.Vorname = vorname
                     kunde.Mail = mail
                     kunde.Ort = ort
                     kunde.Kennwort = kennwort
 
+                    if(geändert != "") res.cookie('istAngemeldetAls', JSON.stringify(kunde))
+
+                    console.log("Stammdaten wurden erfolgreich aktualisiert: " + geändert)
+
                     console.log(kunde)
 
-                    res.render('stammdatenPflegen.ejs', {                              
-                        meldung : "Stammdaten wurden erfolgreich aktualisiert",
-                        nachname : kunde.Nachname,
-                        vorname : kunde.Vorname,
-                        mail : kunde.Mail,
-                        ort : kunde.Ort,
-                        kennwort : kunde.Kennwort
+                    res.render('index.ejs', {                              
+                        meldung : "Stammdaten wurden erfolgreich aktualisiert: " + geändert,
+                        meldungWetter: "",
+                        ort : kunde.Ort                        
                     })
                 })
             })
