@@ -242,7 +242,7 @@ app.post('/',(req, res, next) => {
             res.render('index.ejs', {    
                 ort : result[0].location.name,
                 meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"      
+                meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000)      
             }) 
         });        
     }else{            
