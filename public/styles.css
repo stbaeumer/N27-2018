@@ -1,150 +1,142 @@
-select {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;  
-}
-
-input.eingabe {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;  
-}
-
-input.weather {    
-  margin: 8px 0;
-  background-color: rgb(0, 153, 255);
-  display: inline-block;
-  border: 0px solid white;
-  border-radius: 0px;
-  box-sizing: border-box;
+#parent{  
   color: white;
-  font-size: 16px; 
-  font-family: Arial, Helvetica, sans-serif;
-  direction: rtl;
-}
-
-button {
-  width: 100%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 2.5vh;  
-}
-
-.login {
-  width: 100%;
-  background-color: rgb(119, 107, 107);
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 6vw;  
-}
-
-label {    
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 2.5vh;  
-  color: rgb(119, 107, 107);
-  padding-top: 20px;
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  
-}
-
-div {
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  padding: 20px;
+  background-color: #0074d9;
+  position: relative; 
+  border-radius: 5px; 
   width: 85%;
   margin: 0 auto;
   width: 300px;
+  height: 600px;
   box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
-  -webkit-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
-  -moz-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
-}
-
-h1 {
-  margin-left: -20px; 
-  margin-right: -20px;
-  margin-bottom: 0;
-  margin-top: 0px; 
-  background:#4CAF50;  
-  color: white;
-  display: flex;
-  justify-content: center;  
-  font-size: 5vh;
-  font-family: Arial, Helvetica, sans-serif;  
-}
-
-nav {  
-  margin-left: -20px; 
-  margin-right: -20px;
-  font-family: Arial, Helvetica, sans-serif;    
-    background-color: rgb(119, 107, 107);   
-    font-size: 2vh;
-    text-align:center;  
-    color: white;
-}
-
-h2 {  
-  color: #4CAF50;  
-  font-size: 6vw; 
+   -webkit-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
+   -moz-box-shadow: 11px 7px 32px 5px rgba(0,0,0,0.36);
+  position: relative;
+  border:1px solid rgb(119, 107, 107);
+  display:block;
+  text-align:center;  
   font-family: Arial, Helvetica, sans-serif;
-  text-align:center;
 }
 
-
-
-nav.weather {  
-  font-family: Arial, Helvetica, sans-serif;    
-    background-color: rgb(0, 153, 255); 
-    font-size: 1.5vh;    
-    text-align:center;  
-    color: white;
-    
+.header {
+  height:50px;
+  background:#4CAF50;  
+  padding: 10px; /*Abstand zum oberen Rand */   
+  display: flex;
+  justify-content: center;
+  font-size: 5vh;  
+  font-weight: bolder;
+}
+   
+.nav {
+  height:25px;
+  background: rgb(119, 107, 107);         
+  font-size: 2.1vh;
+}
+  
+.body {
+  background:#f2f2f2;
+  height:450px;
+} 
+  
+.weather {
+  background:rgb(119, 107, 107);         
+  height:30px;
+  font-size: 1.8vh;
+}
+ 
+h2 {    
+  width: 80%;
+  display: block;
+  margin-top: auto;
+  padding: 10px;
+  margin-left: auto;
+  margin-right: auto;  
+  font-size: 3vh;  
+  color: rgb(119, 107, 107);  
+}
+ 
+h3 {    
+  width: 80%;
+  display: block;
+  margin-top: auto;
+  padding: 3px;
+  margin-left: auto;
+  margin-right: auto;    
+  font-size: 3vh;  
+  color: rgb(119, 107, 107);  
 }
  
 a {  
   color: white;  
   text-decoration: none;
- }
+}
+  
+input.weather {
+  width: 70%;
+  background-color: rgb(119, 107, 107);         
+  display: inline-block;
+  border: 0px solid white;
+  border-radius: 0px;
+  box-sizing: border-box;
+  font-size: 1.8vh; 
+  color:white;
+  direction: rtl;
+}
 
- p {
-  color: red;
+label {    
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 3vw; 
- }
-
- #page-container {
-  position: relative;
-  min-height: 100vh;
+  font-size: 2vh;  
+  color: green;
+  width:max-content;
 }
 
-#content-wrap {
-  padding-bottom: 2.5rem;    /* Footer height */
-}
-
-#footer {
+button {
+  width: 80%;
+  border: none;
   color: white;
-  font-size: 1.5vh; 
-  font-family: Arial, Helvetica, sans-serif;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.7vh;
+  margin: 4px 2px;
+  cursor: pointer;
+  background-color: #4CAF50;
+}
+
+input {
+  width: 80%;
+  padding: 15px 32px;
+  margin: 4px 2px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1.7vh;  
+}
+
+select {
+  width: 80%;
+  padding: 15px 32px;
+  margin: 4px 2px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1.7vh;  
+}
+
+select.iban {
+  width: 80%;
+  padding: 15px 32px;
+  margin: 4px 2px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1.2vh;  
+}
+
+p{
+  color: black;
 }

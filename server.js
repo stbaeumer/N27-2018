@@ -208,7 +208,7 @@ app.get('/',(req, res, next) => {
             res.render('index.ejs', {    
                 ort : kunde.Ort,
                 meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")"    
+                meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000)    
             }) 
         });        
     }    
@@ -394,13 +394,10 @@ app.get('/kontoAnlegen',(req, res, next) => {
 
 // Wenn der Button auf der kontoAnlegen-Seite gedrückt wird, ...
 
-app.post('/kontoAnlegen',(req, res, next) => {   
-   
+app.post('/kontoAnlegen',(req, res, next) => {      
     if(req.cookies['istAngemeldetAls'] != ""){
-
         let kunde = new Kunde();
-        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])    
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         let konto = new Konto()
@@ -408,12 +405,13 @@ app.post('/kontoAnlegen',(req, res, next) => {
         // Der Wert aus dem Input mit dem Namen 'kontonummer'
         // wird zugewiesen (=) an die Eigenschaft Kontonummer
         // des Objekts namens konto.
+
         konto.IdKunde = kunde.IdKunde
         konto.Kontonummer = req.body.kontonummer
         
         if(konto.Kontonummer == "" || konto.Kontonummer.length != 4){
             res.render('kontoAnlegen.ejs', {                              
-                meldung : "Zum Kontoanlegen exakt 4 Ziffern angeben!"
+                meldung : "Geben Sie exakt 4 Wunsch-Ziffern an!"
             })                             
         }else{
             konto.Kontoart = req.body.kontoart
@@ -440,8 +438,10 @@ app.post('/kontoAnlegen',(req, res, next) => {
                     }
                 }else{
                     console.log("Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt.");    
-                    res.render('kontoAnlegen.ejs', {                              
-                        meldung : "Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt."
+                    res.render('index.ejs', {                              
+                        meldung : "Konto mit Iban " + konto.Iban + " erfolgreich in DB angelegt.",
+                        ort: kunde.Ort,
+                        meldungWetter : ""
                     })                             
                 }            
             })
@@ -615,7 +615,7 @@ app.post('/ueberweisen',(req, res, next) => {
             res.render('index.ejs', {                              
                 meldung : "Die Quelliban und die Zieliban dürfen nicht übereinstimmen.",
                 meldungWetter : "",
-                ort : ort
+                ort : kunde.Ort
             })    
         }else{
             var betrag = req.body.betrag
@@ -725,8 +725,10 @@ app.post('/zinsen',(req, res, next) => {
         }
         
 
-        res.render('zinsen.ejs', {                              
-            meldung : "Aus dem Anfangskapital i.H.v. " + anfangskapital + " Euro wird bei einem Zinssatz von " + zinssatz + " Prozent nach " + gesamtLaufzeit + " Jahren der Endbetrag " + endkapital + " Euro."
+        res.render('index.ejs', {                              
+            meldung : "Aus dem Anfangskapital i.H.v. " + anfangskapital + " Euro wird bei einem Zinssatz von " + zinssatz + " Prozent nach " + gesamtLaufzeit + " Jahren der Endbetrag: " + endkapital + " Euro.",
+            ort: kunde.Ort,
+            meldungWetter: ""
         })
     }else{
         // Die login.ejs wird gerendert 

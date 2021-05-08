@@ -17,28 +17,33 @@
     <title>N27 - Konto anlegen</title>
   </head>
   <body>
-    <header>
-      <h1>Konto anlegen</h1>    
-      <nav>      
+    <div id="parent">
+      <div class="header">N27 Bank</div>  
+      <div class="nav">     
         <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
         <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>          
         <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
-      </nav>   
-      <br>
-    </header>
-    <form method="POST" action="/kontoAnlegen">
-        <label>Kontonummer (4 Ziffern):</label>
-        <input type="text" name="kontonummer" pattern="[0-9]{4}" title="Bitte 4 Ziffern eingeben">
-        <label>Kontoart:</label>
-        <select name="kontoart">
-          <option value="Girokonto">Girokonto</option>
-          <option value="Sparkonto">Sparkonto</option>
-        </select>
-        <button>Konto anlegen</button>
-    </form>
-      <label><%= meldung %></label>
-      <footer id="footer"><nav><a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a></nav></footer>
+      </div>   
+      <div class="body">   
+        <h2>Konto anlegen</h2>
+        <form method="POST" action="/kontoAnlegen">          
+          <label>Kontonummer (4 Ziffern):</label>
+          <input class="eingabe" type="text" name="kontonummer" pattern="[0-9]{4}" title="Bitte 4 Ziffern eingeben">
+          <label>Kontoart:</label>
+          <select name="kontoart">
+            <option value="Girokonto">Girokonto</option>
+            <option value="Sparkonto">Sparkonto</option>
+          </select>
+          <button>Konto anlegen</button>
+        </form>
+        <label><%= meldung %></label>
+      </div>     
+      <div class="weather"></div>
+      <div class="nav">
+        <a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> | 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a>
+      </div>
+    </div>
   </body>
 </html>

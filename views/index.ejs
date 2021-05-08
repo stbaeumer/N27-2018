@@ -17,31 +17,33 @@
     <title>N27 - Startseite</title>
   </head>
   <body>    
-    <div>
-    <header>       
-      <h1>N27 Bank</h1>    
-      <nav>
-        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
+    <div id="parent">
+      <div class="header">N27 Bank</div>
+      <div class="nav">
+        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                         
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
         <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
-        <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>              
-      </nav>
-      <nav class="weather"><form method="POST" action="/">
-         <input class="weather" type="text" name="ort" value="<%= ort %>">          
-          <%= meldungWetter %>
+        <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
+      </div>    
+      <div class="body">
+        <h2> Herzlich Willkommen bei der N27 Bank!</h2>
+        <form>          
+          <button formaction="/kontoAnlegen">Konto anlegen</button>
+          <button formaction="/ueberweisen">Überweisung tätigen</button>
+          <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
+          <button formaction="/zinsen">Endkapital ausrechnen</button>
+        </form>  
+        <p><%=meldung%></p>
+      </div>      
+      <div class="weather">
+        <form method="POST" action="/">
+          <input class="weather" type="text" name="ort" value="<%= ort %>"> <%= meldungWetter %>
         </form>
-      </nav>
-      <br>
-    </header>    
-    <form>          
-      <button formaction="/kontoAnlegen">Konto anlegen</button>
-      <button formaction="/ueberweisen">Überweisung tätigen</button>
-      <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
-      <button formaction="/zinsen">Endkapital ausrechnen</button>
-    </form>  
-    <label><%= meldung %></label>
-    <footer id="footer"><nav><a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a></nav></footer>
-  </div>
+      </div>
+      <div class="nav">
+        <a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> | 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a>
+      </div>       
+    </div>
   </body>
 </html>

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">  
   <head>
-    <meta charset="utf-8" />
+    <!--Die Gestaltung der Elemente der 
+      HTML-Seite wird in der styles.css festgelegt-->
     <link rel="stylesheet" href="styles.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
     <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,18 +13,30 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#ffc40d">
     <meta name="theme-color" content="#ffffff">
-    <title>N27 - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">        
+    <title>N27 - Anmelden</title>
   </head>
   <body>
-    <h1>Bitte anmelden!</h1>
-    <form method="POST">
-      <label>Benutzer-ID:</label>
-      <input type="number" name="idKunde">
-      <label>Kennwort:</label>      
-      <input type="password" name="kennwort">      
-      <button formaction="/login">Login</button>
-    </form>     
-    <label><%= meldung %></label>
-    <footer id="footer"><nav><a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a></nav></footer>
+    <div id="parent">
+      <div class="header">N27 Bank</div>  
+      <div class="nav">                  
+        <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
+      </div>   
+      <div class="body">   
+        <h2>Bitte anmelden!</h2>
+        <form method="POST">
+          <label>Benutzer-ID:</label>
+          <input class="eingabe" type="number" min="100000" max="999999" title="Bitte exakt 6 Ziffern eingeben!" name="idKunde">
+          <label>Kennwort:</label>      
+          <input class="eingabe" type="password" required="required" name="kennwort">      
+          <button formaction="/login">Login</button>
+        </form>     
+        <label><%= meldung %></label>
+      </div>     
+      <div class="weather"></div>
+      <div class="nav">
+        <a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> | 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a>
+      </div>
+    </div>
   </body>
 </html>

@@ -17,25 +17,31 @@
     <title>Kontostand anzeigen</title>
   </head>
   <body>
-    <header>
-      <h1>Kontostand anzeigen</h1>    
-      <nav>      
-        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                        
+    <div id="parent">
+      <div class="header">N27 Bank</div>
+      <div class="nav">
+        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>                         
         <a href="/login">Logout</a>        
         <a href="/impressum">Impressum</a>
         <a href="/stammdatenPflegen"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>        
         <a href="mailto:stefan.baeumer@berufskolleg-borken.de"> <i class="fa fa-envelope-o"></i></a>
-      </nav>   
-      <br>
-    </header>
-    <form method="POST" action="/kontoAnzeigen">
-      <select name="iban">
-        <% for(var i=0; i< konten.length; i++) {%>              
-          <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
-        <% } %> 
-      </select>
-      <button>Kontostand jetzt anzeigen</button>
-    </form>
-    <footer id="footer"><nav><a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a></nav></footer>
+      </div>    
+      <div class="body">
+        <h2>Kontostand anzeigen</h2>
+        <label>Konto wählen:</label>
+        <form method="POST" action="/kontoAnzeigen">
+          <select class="iban" name="iban">          
+            <% for(var i=0; i< konten.length; i++) {%>              
+              <option value="<%= konten[i].iban %>"><%= konten[i].iban %></option>                  
+            <% } %> 
+          </select>
+          <button>Kontostand jetzt anzeigen</button>
+        </form>
+      </div>     
+      <div class="weather"></div>
+      <div class="nav">
+        <a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> | 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a>
+      </div>
+    </div>
   </body>
 </html>
