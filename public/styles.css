@@ -23,14 +23,14 @@
   padding: 10px; /*Abstand zum oberen Rand */   
   display: flex;
   justify-content: center;
-  font-size: 5vh;  
+  font-size: 35px;  
   font-weight: bolder;
 }
    
 .nav {
   height:25px;
   background: rgb(119, 107, 107);         
-  font-size: 2.1vh;
+  font-size: 20px;
 }
   
 .body {
@@ -41,7 +41,7 @@
 .weather {
   background:rgb(119, 107, 107);         
   height:30px;
-  font-size: 1.8vh;
+  font-size: 15px;
 }
  
 h2 {    
@@ -51,7 +51,7 @@ h2 {
   padding: 10px;
   margin-left: auto;
   margin-right: auto;  
-  font-size: 3vh;  
+  font-size: 20px;  
   color: rgb(119, 107, 107);  
 }
  
@@ -62,7 +62,7 @@ h3 {
   padding: 3px;
   margin-left: auto;
   margin-right: auto;    
-  font-size: 3vh;  
+  font-size: 15px;  
   color: rgb(119, 107, 107);  
 }
  
@@ -78,14 +78,14 @@ input.weather {
   border: 0px solid white;
   border-radius: 0px;
   box-sizing: border-box;
-  font-size: 1.8vh; 
+  font-size: 10px; 
   color:white;
   direction: rtl;
 }
 
 label {    
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 2vh;  
+  font-size: 15px;  
   color: green;
   width:max-content;
 }
@@ -98,7 +98,7 @@ button {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 1.7vh;
+  font-size: 18px;
   margin: 4px 2px;
   cursor: pointer;
   background-color: #4CAF50;
@@ -112,7 +112,7 @@ input {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 2.5vh;  
+  font-size: 15px;  
 }
 
 input.klein {
@@ -123,7 +123,7 @@ input.klein {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 1vh;  
+  font-size: 10px;  
 }
 
 select {
@@ -134,7 +134,7 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 2.5vh;  
+  font-size: 25px;  
 }
 
 select.iban {
@@ -145,9 +145,10 @@ select.iban {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 1.2vh;  
+  font-size: 11px;  
 }
 
 p{
   color: black;
 }
+

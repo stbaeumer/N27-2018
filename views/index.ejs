@@ -34,12 +34,10 @@
           <button formaction="/kontoAnzeigen">Kontostand anzeigen</button>
           <button formaction="/zinsen">Endkapital ausrechnen</button>
         </form>  
-        <p><%=meldung%></p>
+        <p <%=style%>><%=meldung%></p>        
       </div>      
-      <div class="weather">
-        <form method="POST" action="/">
-          <input class="weather" type="text" name="ort" value="<%= ort %>"> <%= meldungWetter %>
-        </form>
+      <div class="weather">        
+        <%= meldungWetter %>
       </div>
       <div class="nav">
         <a href="http://www.gnu.de/documents/gpl.de.html">GPLv3</a> | 2021 | GW18 | <a href="https://github.com/stbaeumer/N27"><i class="fa fa-github"></i></a>

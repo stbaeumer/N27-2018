@@ -163,54 +163,32 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 // Wenn die Startseite im Browser aufgerufen wird, ...
 
-app.get('/',(req, res, next) => {   
-   
+app.get('/',(req, res, next) => {      
     if(req.cookies['istAngemeldetAls'] != "" && req.cookies['istAngemeldetAls'] != undefined){
-
-    console.log(req.cookies['istAngemeldetAls'])
-    
-    // Das Kundenobjekt wird instanziiert.
-    // Deklaration = Bekanntgabe: let kunde
-    // Instanziierung = Erkennbar am reservierten Wort "new". Speicherzellen im Arbeitsspeicher werden reserviert.
-    // Initialisierung: Werte werden Werte zugewiesen und in die reservierten Speicherzellen geschrieben.
-    
-    let kunde = new Kunde()
-
-    // Der Cookie speichert das Kundenobjekt als primitiven, einwertigen String.
-    console.log("Cookie:")
-
-    // Das Kundenobjekt wird aus dem Cookie initialisiert.
-    
-    kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+        console.log(req.cookies['istAngemeldetAls'])
         
-    console.log(kunde)
+        // Das Kundenobjekt wird instanziiert.
+        // Deklaration = Bekanntgabe: let kunde
+        // Instanziierung = Erkennbar am reservierten Wort "new". Speicherzellen im Arbeitsspeicher werden reserviert.
+        // Initialisierung: Werte werden Werte zugewiesen und in die reservierten Speicherzellen geschrieben.
+        
+        let kunde = new Kunde()
 
-        // Die Funktion find() gibt das Wetter zu den Angaben in den runden Klammern zurück.
-        weather.find({search: kunde.Ort, degreeType: 'C'}, function(fehler, result) {
+        // Der Cookie speichert das Kundenobjekt als primitiven, einwertigen String.
+        console.log("Cookie:")
+
+        // Das Kundenobjekt wird aus dem Cookie initialisiert.
+        
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
             
-            // Wenn ein Fehler auftritt, werden wir auf die Login-Seite zurückgeworfen, 
-            // weil das Kundenobjekt dann NULL ist
-            if(fehler){
-                res.render('login.ejs', {      
-                    meldung : "Bitte erneut anmelden!"
-                })            
-            }
-    
-            // stringify ist eine Funktion, die auf das JSON-Objekt aufgerufen den result in einem
-            // langen String zurückgibt. 
-            console.log(JSON.stringify(result, null, 2));
-
-            console.log("Der ganze Result: " + result)
-            // Der Result ist eine Liste von Objekten. Wenn der angegebene Ortsname mehrfach existiert, hat die Liste mehr als einen Eintrag.
-            console.log("Vom ersten Element der Name des Orts " + result[0].location.name);
-            console.log("Vom ersten Element die aktuelle Temperatur :" + result[0].current.temperature);
-    
-            res.render('index.ejs', {    
-                ort : kunde.Ort,
-                meldungWetter : result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000)    
-            }) 
-        });        
+        console.log(kunde)
+        
+        
+        res.render('index.ejs', {                
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,  
+            meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000)   ,
+            style : "" 
+        })      
     }    
     else{
         res.render('login.ejs', {      
@@ -235,16 +213,12 @@ app.post('/',(req, res, next) => {
         if(neuerOrt){
             ort = neuerOrt
         }
-
-        weather.find({search: ort, degreeType: 'C'}, function(err, result) {
-            if(err) console.log(err);
     
-            res.render('index.ejs', {    
-                ort : result[0].location.name,
-                meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000)      
-            }) 
-        });        
+        res.render('index.ejs', {    
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,  
+            meldung : kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ") Port: " + (process.env.PORT || 3000),
+            style : ""  
+        })     
     }else{            
         res.render('login.ejs', {     
             meldung : ""               
@@ -285,7 +259,7 @@ app.post('/login',(req, res, next) => {
                 // Das Objekt wird im Gegensatz zur Klasse kleingeschrieben.
 
                 let kunde = new Kunde()
-
+            
                 // Initialisierung
 
                 // Der result ist eine Liste von Datensätzen. Wir wissen, dass diese Liste nur einen
@@ -299,26 +273,29 @@ app.post('/login',(req, res, next) => {
                 kunde.Ort = result[0].ort
                 kunde.Kennwort = result[0].kennwort
                 
-                console.log(kunde)
-                
-                // Der Browser kann während des Hin- und Herschaltens in der App nicht wissen,
-                // dass immer dieselbe Person vor ihm sitzt. Damit der Browser während der ganzen Sitzung 
-                // weiß, wer ihn bedient, wird das ganze Kundenobjekt im Cookie gespeichert.
-                // Da der Cookie nur einen Text aufnehmen kann, das Kundenobbejkt aber ein komplexer Datentyp
-                // ist, wird mit der Methode JSON.stringify() das Kundenobjekt in einen String umgewandelt.
-                // Zuletzt wird der Cookie an den Browser respondet
-
-                res.cookie('istAngemeldetAls', JSON.stringify(kunde))
-
-                console.log("Der Cookie nach Login wird gesetzt: " + JSON.stringify(kunde))
-            
                 weather.find({search: kunde.Ort, degreeType: 'C'}, function(err, result) {
                     if(err) console.log(err);
+                
+                    kunde.Temperatur = result[0].current.temperature
+                    kunde.TemperaturEinheit = result[0].location.degreetype
+                    
+                    console.log(kunde)
+                    
+                    // Der Browser kann während des Hin- und Herschaltens in der App nicht wissen,
+                    // dass immer dieselbe Person vor ihm sitzt. Damit der Browser während der ganzen Sitzung 
+                    // weiß, wer ihn bedient, wird das ganze Kundenobjekt im Cookie gespeichert.
+                    // Da der Cookie nur einen Text aufnehmen kann, das Kundenobbejkt aber ein komplexer Datentyp
+                    // ist, wird mit der Methode JSON.stringify() das Kundenobjekt in einen String umgewandelt.
+                    // Zuletzt wird der Cookie an den Browser respondet
+
+                    res.cookie('istAngemeldetAls', JSON.stringify(kunde))
+
+                    console.log("Der Cookie nach Login wird gesetzt: " + JSON.stringify(kunde))
             
                     res.render('index.ejs', {    
-                        ort : result[0].location.name,
-                        meldungWetter :  result[0].current.temperature + " °" + result[0].location.degreetype,  
-                        meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")" 
+                        meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,  
+                        meldung : "Portnummer: " + (process.env.PORT || 3000) + ", Kunde: " + kunde.Vorname + " " + kunde.Nachname + "(" + kunde.IdKunde + ")",
+                        style : ""  
                     }) 
                 });
             }else{
@@ -383,7 +360,8 @@ app.get('/kontoAnlegen',(req, res, next) => {
         // ... dann wird kontoAnlegen.ejs gerendert.
         
         res.render('kontoAnlegen.ejs', {    
-            meldung : ""                          
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+            meldung : ""                         
         })
     }else{
         res.render('login.ejs', {                    
@@ -411,7 +389,9 @@ app.post('/kontoAnlegen',(req, res, next) => {
         
         if(konto.Kontonummer == "" || konto.Kontonummer.length != 4){
             res.render('kontoAnlegen.ejs', {                              
-                meldung : "Geben Sie exakt 4 Wunsch-Ziffern an!"
+                meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+                meldung : "Geben Sie exakt 4 Wunsch-Ziffern an!",
+                style : "style=background-color:red;" 
             })                             
         }else{
             konto.Kontoart = req.body.kontoart
@@ -427,21 +407,25 @@ app.post('/kontoAnlegen',(req, res, next) => {
                         console.log("Das Konto mit der Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." );
                         // ... wird die kontoAnlegen.ejs gerendert.
 
-                        res.render('kontoAnlegen.ejs', {                              
-                            meldung : "Das Konto mit der Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt." 
+                        res.render('index.ejs', {                              
+                            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+                            meldung : "Das Konto mit der Iban " + konto.Iban + " existiert bereits und wird nicht erneut in DB angelegt.",
+                            style : "style=background-color:red;" 
                         })
                     }else{
                         console.log("Fehler: " + fehler.code)
-                        res.render('kontoAnlegen.ejs', {                              
-                            meldung : "Sonstiger Fehler: " + fehler.code
+                        res.render('kontoAnlegen.ejs', {                
+                            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,              
+                            meldung : "Sonstiger Fehler: " + fehler.code,
+                            style : "style=background-color:red;" 
                         })
                     }
                 }else{
-                    console.log("Das Konto mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.");    
+                    console.log("Das " + konto.Kontoart + " mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.");    
                     res.render('index.ejs', {                              
-                        meldung : "Das Konto mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.",
-                        ort: kunde.Ort,
-                        meldungWetter : ""
+                        meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+                        meldung : "Das " + konto.Kontoart + " mit der Iban " + konto.Iban + " wurde erfolgreich in DB angelegt.",
+                        style : "" 
                     })                             
                 }            
             })
@@ -466,7 +450,9 @@ app.get('/stammdatenPflegen',(req, res, next) => {
         // ... dann wird kontoAnlegen.ejs gerendert.
         
         res.render('stammdatenPflegen.ejs', {    
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
             meldung : "",
+            style : "", 
             nachname : kunde.Nachname,
             vorname : kunde.Vorname,
             ort : kunde.Ort,
@@ -533,9 +519,9 @@ app.post('/stammdatenPflegen',(req, res, next) => {
                     console.log(kunde)
 
                     res.render('index.ejs', {                              
+                        meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                         meldung : "Stammdaten wurden erfolgreich aktualisiert: " + geändert,
-                        meldungWetter: "",
-                        ort : kunde.Ort                        
+                        style : "" 
                     })
                 })
             })
@@ -587,9 +573,10 @@ app.get('/ueberweisen',(req, res, next) => {
                 // Die ueberweisen-Seite wid mit den übergebeben quellkonten und zielkonten an den Browser übergeben.
 
                 res.render('ueberweisen.ejs', {    
+                    meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                     meldung : "",
-                         quellkonten : quellkonten,
-                         zielkonten : zielkontenResult                     
+                    quellkonten : quellkonten,
+                    zielkonten : zielkontenResult           
                 })
             })
         })
@@ -618,27 +605,27 @@ app.post('/ueberweisen',(req, res, next) => {
 
         if(quellIban === zielIban){
             res.render('index.ejs', {                              
+                meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                 meldung : "Die Quelliban und die Zieliban dürfen nicht übereinstimmen.",
-                meldungWetter : "",
-                ort : kunde.Ort
+                style : "style=background-color:red;" 
             })    
         }else{
             var betrag = req.body.betrag
 
-            if(betrag < 0){
+            if(betrag == undefined || betrag == "" || betrag < 0){
                 res.render('index.ejs', {                              
-                    meldung : "Bitte nur positive Eurobeträge eingeben.",
-                    ort : ort,
-                    meldungWetter : ""
+                    meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+                    meldung : "Bitte bei der Überweisung nur positive Eurobeträge eingeben.",
+                    style : "style=background-color:red;" 
                 })    
             }else{
                 var verwendungszweck = req.body.verwendungszweck
             
                 if(verwendungszweck == ""){
                     res.render('index.ejs', {                              
+                        meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                         meldung : "Bitte einen Verwendungszweck eingeben.",
-                        meldungWetter : "",
-                        ort : ort
+                        style : "style=background-color:red;" 
                     })  
                 }else{
 
@@ -659,9 +646,9 @@ app.post('/ueberweisen',(req, res, next) => {
                     // ... wird die kontoAnlegen.ejs gerendert.
     
                     res.render('index.ejs', {                              
+                        meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                         meldung : "Die Überweisung an " + zielIban + " wurde erfolgreich durchgeführt.",
-                        meldungWetter : "",
-                        ort : kunde.Ort
+                        style : "" 
                     })
                 }                
             }
@@ -690,6 +677,7 @@ app.get('/zinsen',(req, res, next) => {
         // ... dann wird kontoAnlegen.ejs gerendert.
         
         res.render('zinsen.ejs', {    
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
             meldung : ""                          
         })
     }else{
@@ -731,9 +719,9 @@ app.post('/zinsen',(req, res, next) => {
         
 
         res.render('index.ejs', {                              
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
             meldung : "Aus " + anfangskapital + " € Anfangskapital wird bei einem Zinssatz von " + zinssatz + " % nach " + gesamtLaufzeit + " Jahren: " + endkapital + " €.",
-            ort: kunde.Ort,
-            meldungWetter: ""
+            style : "" 
         })
     }else{
         // Die login.ejs wird gerendert 
@@ -761,7 +749,8 @@ app.get('/kontoAnzeigen',(req, res, next) => {
                 if (fehler) throw fehler
                 
                 res.render('kontoAnzeigen.ejs', {    
-                    konten : result
+                    konten : result,
+                    meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit
                 })
             })
         })
@@ -807,9 +796,9 @@ app.post('/kontoAnzeigen',(req, res, next) => {
                 // ... wird die kontoAnlegen.ejs gerendert.
         
                 res.render('index.ejs', {                              
-                    meldung : "Der Kontostand des Kontos mit der IBAN " + iban + " beträgt: " + kontostand + " €.",
-                    ort : kunde.Ort,
-                    meldungWetter : ""
+                    meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
+                    meldung : "Der Kontostand des Kontos mit der IBAN " + iban + " beträgt: " + kontostand + "€.",
+                    style : "" 
                 })
             })
         })
