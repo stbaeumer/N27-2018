@@ -31,15 +31,15 @@
         <form method="POST" action="/zinsen">
           <label>Anfangskapital:</label>
           <br>
-          <input type="number" required="required" name="anfangskapital">
+          <input type="number" required="required" min="1" name="anfangskapital">
           <br>
           <label>Laufzeit:</label>
           <br>
-          <input type="number" required="required" name="laufzeit">
+          <input type="number" required="required"min="1" name="laufzeit">
           <br>
           <label>Zinssatz:</label>
           <br>
-          <input type="number" required="required" name="zinssatz">        
+          <input type="number" required="required" min="0" name="zinssatz">        
           <br>
           <button>Zinseszins berechnen</button>
         </form>
