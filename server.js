@@ -164,16 +164,22 @@ const server = app.listen(process.env.PORT || 3000, () => {
 // Wenn die Startseite im Browser aufgerufen wird, ...
 
 app.get('/',(req, res, next) => {      
-    if(req.cookies['istAngemeldetAls'] != "" && req.cookies['istAngemeldetAls'] != undefined){
-        console.log(req.cookies['istAngemeldetAls'])
+    if(req.cookies['istAngemeldetAls'] != ""){
         
         // Das Kundenobjekt wird instanziiert.
         // Deklaration = Bekanntgabe: let kunde
         // Instanziierung = Erkennbar am reservierten Wort "new". Speicherzellen im Arbeitsspeicher werden reserviert.
         // Initialisierung: Werte werden Werte zugewiesen und in die reservierten Speicherzellen geschrieben.
-        
-        let kunde = new Kunde()
 
+        let kunde = new Kunde();
+        kunde = JSON.parse(req.cookies['istAngemeldetAls'])
+        console.log("Kunde ist angemeldet als " + kunde.IdKunde)
+
+        // Das Kundenobjekt wird instanziiert.
+        // Deklaration = Bekanntgabe: let kunde
+        // Instanziierung = Erkennbar am reservierten Wort "new". Speicherzellen im Arbeitsspeicher werden reserviert.
+        // Initialisierung: Werte werden Werte zugewiesen und in die reservierten Speicherzellen geschrieben.
+        
         // Der Cookie speichert das Kundenobjekt als primitiven, einwertigen String.
         console.log("Cookie:")
 
@@ -200,7 +206,6 @@ app.get('/',(req, res, next) => {
 app.post('/',(req, res, next) => {   
     
     if(req.cookies['istAngemeldetAls'] != ""){
-
         let kunde = new Kunde();
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
             
@@ -330,7 +335,8 @@ app.get('/impressum',(req, res, next) => {
         
         // ... dann wird impressum.ejs gerendert.
         
-        res.render('impressum.ejs', {                              
+        res.render('impressum.ejs', {   
+            meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,                           
         })
     }else{
         res.render('login.ejs', {         
@@ -388,7 +394,7 @@ app.post('/kontoAnlegen',(req, res, next) => {
         konto.Kontonummer = req.body.kontonummer
         
         if(konto.Kontonummer == "" || konto.Kontonummer.length != 4){
-            res.render('kontoAnlegen.ejs', {                              
+            res.render('index.ejs', {                              
                 meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
                 meldung : "Geben Sie exakt 4 Wunsch-Ziffern an!",
                 style : "style=background-color:red;" 
@@ -671,7 +677,6 @@ app.get('/zinsen',(req, res, next) => {
         let kunde = new Kunde();
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
     
-
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         // ... dann wird kontoAnlegen.ejs gerendert.
@@ -688,13 +693,9 @@ app.get('/zinsen',(req, res, next) => {
 })
 
 app.post('/zinsen',(req, res, next) => {   
-
     if(req.cookies['istAngemeldetAls'] != ""){
-
         let kunde = new Kunde();
-      
         kunde = JSON.parse(req.cookies['istAngemeldetAls'])
-    
         console.log("Kunde ist angemeldet als " + kunde.IdKunde)
         
         var zinssatz = parseFloat(req.body.zinssatz)
@@ -717,10 +718,9 @@ app.post('/zinsen',(req, res, next) => {
             console.log("Endkapital nach " + (gesamtLaufzeit - restLaufzeit) + " Jahren: " + endkapital)
         }
         
-
         res.render('index.ejs', {                              
             meldungWetter : kunde.Ort + ": " + kunde.Temperatur + " °" + kunde.TemperaturEinheit,
-            meldung : "Aus " + anfangskapital + " € Anfangskapital wird bei einem Zinssatz von " + zinssatz + " % nach " + gesamtLaufzeit + " Jahren: " + endkapital + " €.",
+            meldung : "Aus " + anfangskapital + " € Anfangskapital wird bei einem Zinssatz von " + zinssatz + "% nach " + gesamtLaufzeit + " Jahren: " + endkapital + " €.",
             style : "" 
         })
     }else{
